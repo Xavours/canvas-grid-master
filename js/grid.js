@@ -49,6 +49,12 @@
 		var mouseup = false;
 		var rectHits = [];
 		var mouseX, mouseY;
+		
+//  Class
+	
+	function Poster() {
+		this.image = library[randomPick( 0, library.length - 1 )].src;
+	}
 
 window.onload = function(){
 
@@ -86,16 +92,13 @@ window.onload = function(){
 
 	//  Add rect nodes with X and Y according to the cols and rows
 	for (var i = nOfRects - 1; i >= 0; i--) {
-		rects[i] = {};
+		rects[i] = new Poster();
 		var x = (cols-i%cols)*rectSize - rectSize;
 		var y = (rows-Math.floor(i/cols))*rectSize - rectSize;
 		
 		//  CornerPoints
 		rects[i].tlX = x; //Top left x
 		rects[i].tlY = y; //Top left y
-
-		//  Image
-		rects[i].image = library[randomPick( 0, library.length - 1 )].src;
 	};
 
 	var rectsClone = rects.clone();
