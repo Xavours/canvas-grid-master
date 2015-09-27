@@ -40,7 +40,7 @@ module.exports = function(grunt) {
       },
       my_target: {
         files: {
-	  'min/app.min.js': ['js/grid.js'],
+	  'min/app.min.js': ['js/grid.js', 'js/easing.js'],
 	  
         }
       }
