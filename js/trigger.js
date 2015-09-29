@@ -54,6 +54,8 @@
 		var mouseup = false;
 		var rectHits = [];
 		var mouseX, mouseY;
+		var deltaX = 0;
+		var deltaY = 0;
 		
 		
 	document.addEventListener("mousedown", function(e){
@@ -74,11 +76,9 @@
 	    	var lastmouseX = mouseX;
 	        var lastmouseY = mouseY;
 	        getMouseCoord(e);
-	        var deltaX = mouseX - lastmouseX;
-	        var deltaY = mouseY - lastmouseY;
+	        deltaX = mouseX - lastmouseX;
+	        deltaY = mouseY - lastmouseY;
 	        
-	        wall.current.positionX += -deltaX * 0.1;
-	        wall.current.positionY += -deltaY * 0.1;
 			wall.render(posters);
 	    
 	    }
