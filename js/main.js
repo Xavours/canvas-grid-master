@@ -69,49 +69,6 @@
 	        //  Clear canvas
 	        ctx.clearRect(0, 0, self.width, self.height);
 	        
-	        
-	        /*
-//  Draw first column
-	        for (var j = 0; j < self.tile.numberCol; j++) {
-		        ctx.fillStyle = "rgb(" + array[this.current.tileX][this.current.tileY + j].color.red + "," + array[this.current.tileX][this.current.tileY + j].color.green + "," + array[this.current.tileX][this.current.tileY + j].color.blue + ")";
-		        if ( j <=1) {
-			        ctx.fillRect(0, j*this.current.offsetY, this.current.offsetX, this.current.offsetY + j*self.tile.height);
-		        } else {
-			        ctx.fillRect(0, this.current.offsetY + (j-1)*self.tile.height, this.current.offsetX, this.current.offsetY + j*self.tile.height);
-		        }
-		    }
-		    
-		    //  Draw second column
-	        for (var j = 0; j < self.tile.numberCol; j++) {
-		        ctx.fillStyle = "rgb(" + array[this.current.tileX + 1][this.current.tileY + j].color.red + "," + array[this.current.tileX + 1][this.current.tileY + j].color.green + "," + array[this.current.tileX + 1][this.current.tileY + j].color.blue + ")";
-		        if ( j <=1) {
-			        ctx.fillRect(this.current.offsetX, j*this.current.offsetY, self.tile.width, this.current.offsetY + j*self.tile.height);
-		        } else {
-			        ctx.fillRect(this.current.offsetX, this.current.offsetY + (j-1)*self.tile.height, self.tile.width, this.current.offsetY + j*self.tile.height);
-		        }
-		    }
-		    
-		    //  Draw third column
-	        for (var j = 0; j < self.tile.numberCol; j++) {
-		        ctx.fillStyle = "rgb(" + array[this.current.tileX + 2][this.current.tileY + j].color.red + "," + array[this.current.tileX + 2][this.current.tileY + j].color.green + "," + array[this.current.tileX + 2][this.current.tileY + j].color.blue + ")";
-		        if ( j <=1) {
-			        ctx.fillRect(this.current.offsetX + self.tile.width, j*this.current.offsetY, self.tile.width, this.current.offsetY + j*self.tile.height);
-		        } else {
-			        ctx.fillRect(this.current.offsetX + self.tile.width, this.current.offsetY + (j-1)*self.tile.height, self.tile.width, this.current.offsetY + j*self.tile.height);
-		        }
-		    }
-		    
-		    //  Draw fourth column
-	        for (var j = 0; j < self.tile.numberCol; j++) {
-		        ctx.fillStyle = "rgb(" + array[this.current.tileX + 3][this.current.tileY + j].color.red + "," + array[this.current.tileX + 3][this.current.tileY + j].color.green + "," + array[this.current.tileX + 3][this.current.tileY + j].color.blue + ")";
-		        if ( j <=1) {
-			        ctx.fillRect(this.current.offsetX + 2*self.tile.width, j*this.current.offsetY, self.tile.width, this.current.offsetY + j*self.tile.height);
-		        } else {
-			        ctx.fillRect(this.current.offsetX + 2*self.tile.width, this.current.offsetY + (j-1)*self.tile.height, self.tile.width, this.current.offsetY + j*self.tile.height);
-		        }
-		    }
-*/
-	        
 	        //  Draw columns
 	        for (var i = 0; i <= self.tile.numberRow; i++) {
 	        	for (var j = 0; j <= self.tile.numberCol; j++) {
@@ -148,8 +105,7 @@ function Poster() {
 	    blue: randomPick(1, 255)
 	};
 	this.width = 50;
-	this.height = 50
-}
+	this.height = 50 }
 
 //  Generate array
 function generate(array) {
