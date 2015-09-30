@@ -4,9 +4,15 @@ Starting from that GitHub project : https://github.com/spoeken/infinite-canvas-g
 Canvas-grid-master is an endless grid in canvas to browse a bunch of images stored in a folder.
 Work in progress.
 
-To Do :
+## To Do :
 
-- Support image
-- Add easing
-- Optimize draw function
+### Features
+* Support image
+* Optimize draw function
+
+
+### Nice to have
+* Add easing
+* Add black tiles when the wall is moving before revealing the tiles
+* Add animation when new tiles appear
 
