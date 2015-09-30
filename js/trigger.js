@@ -79,6 +79,9 @@
 	        deltaX = mouseX - lastmouseX;
 	        deltaY = mouseY - lastmouseY;
 	        
+	        wall.current.positionX += -deltaX;
+	        wall.current.positionY += -deltaY;
+
 			wall.render(posters);
 	    
 	    }
