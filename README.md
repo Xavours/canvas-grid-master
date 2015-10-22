@@ -13,10 +13,11 @@ I am exploring two options :
 ### Features
 * Support image
 * Optimize draw function
+* Add scaling
+* Redo and complete the triggers
+* Regenerate a bunch of tiles when it is necessary
 
 
 ### Nice to have
-* Add easing
-* Add black tiles when the wall is moving before revealing the tiles
-* Add animation when new tiles appear
+* Add easing when the viewport moves
 
