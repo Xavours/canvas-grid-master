@@ -1,4 +1,4 @@
-//  Easing Equations by RObert Penner
+//  Easing Equations by Robert Penner
 //  http://gizma.com/easing/
 
 	function easeOutCubic(t, b, c, d) {
@@ -16,3 +16,9 @@
 	function easeCustom(t, b, c, d) {
 		return c + Math.floor((b - c) /20);
 	}
+	
+	function easeOutCubic(t, b, c, d) {
+		t /= d;
+		t--;
+		return c*(t*t*t + 1) + b;
+	};
