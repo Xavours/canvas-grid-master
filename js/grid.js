@@ -134,8 +134,8 @@ window.onload = function(){
 		//Need an easing function here:
 		for (var i = rects.length - 1; i >= 0; i--) {
 			//CornerPoints
-			rects[i].tlX = easeCustom(1, rectsClone[i].tlX, rects[i].tlX, 60); //Top left x
-			rects[i].tlY = easeCustom(1, rectsClone[i].tlY , rects[i].tlY, 60); //Top left y
+			rects[i].tlX = easeCustom(1, rectsClone[i].tlX, rects[i].tlX, 20); //Top left x
+			rects[i].tlY = easeCustom(1, rectsClone[i].tlY , rects[i].tlY, 20); //Top left y
 		};
 
 		requestAnimationFrame(update);
