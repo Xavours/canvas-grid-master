@@ -61,6 +61,8 @@ function validOption(which, param){
 	    this.current = {
 	        positionX: Math.floor(self.width / 2),
 	        positionY: Math.floor(self.height / 2),
+	        
+	        //  Get the first tile on the upper left corner
 	        getCurrentTile: function (x, y) {
 	            this.tileX = Math.floor(x / self.tile.width) + 1;
 	            this.offsetX = self.tile.width - ( x % self.tile.width );
@@ -84,8 +86,6 @@ function validOption(which, param){
 	    this.render = function (array) {
 	    
 	    	//  Update Data
-	    	wall.current.positionX += -deltaX;
-	        wall.current.positionY += -deltaY;
 	        this.updateScale();
 	        this.tile.updateNumberTile();
 	        this.current.getCurrentTile(this.current.positionX, this.current.positionY)
@@ -94,8 +94,8 @@ function validOption(which, param){
 	        ctx.clearRect(0, 0, self.width, self.height);
 	        
 	        //  Draw rectangles
-	        for (var i = 0; i <= self.tile.numberRow/2; i++) {
-	        	for (var j = 0; j <= self.tile.numberCol/2; j++) {
+	        for (var i = 0; i <self.tile.numberRow; i++) {
+	        	for (var j = 0; j <self.tile.numberCol; j++) {
 	        	
 	        		var currentPoster = array[this.current.tileX + i][this.current.tileY + j];
 	        		
@@ -103,20 +103,20 @@ function validOption(which, param){
 	        		currentPoster.fade();
 			        ctx.fillStyle = currentPoster.rgba;
 			        
-			        if ( i <=1) {
+			        if ( i <1) {
 				        
-				        if ( j <=1) {
-					        ctx.fillRect(i*this.current.offsetX, j*this.current.offsetY, this.current.offsetX + i*self.tile.width, this.current.offsetY + j*self.tile.height);
+				        if ( j <1) {
+					        ctx.fillRect(i*this.current.offsetX, j*this.current.offsetY, this.current.offsetX, this.current.offsetY);
 				        } else {
-					        ctx.fillRect(i*this.current.offsetX, this.current.offsetY + (j-1)*self.tile.height, this.current.offsetX + i*self.tile.width, this.current.offsetY + j*self.tile.height);
+					        ctx.fillRect(i*this.current.offsetX, this.current.offsetY + (j-1)*self.tile.height, this.current.offsetX, self.tile.height);
 						}
 						
 					} else {
 						
-						if ( j <=1) {
-					        ctx.fillRect(this.current.offsetX + (i-1)*self.tile.width, j*this.current.offsetY, this.current.offsetX + i*self.tile.width, this.current.offsetY + j*self.tile.height);
+						if ( j <1) {
+					        ctx.fillRect(this.current.offsetX + (i-1)*self.tile.width, j*this.current.offsetY, self.tile.width, this.current.offsetY);
 				        } else {
-					        ctx.fillRect(this.current.offsetX + (i-1)*self.tile.width, this.current.offsetY + (j-1)*self.tile.height, this.current.offsetX + i*self.tile.width, this.current.offsetY + j*self.tile.height)
+					        ctx.fillRect(this.current.offsetX + (i-1)*self.tile.width, this.current.offsetY + (j-1)*self.tile.height, self.tile.width, self.tile.height)
 						}
 					}
 				}
