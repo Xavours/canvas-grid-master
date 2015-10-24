@@ -2,27 +2,41 @@
     function randomPick(min, max) {
     return Math.floor(Math.random() * max) + min;
     }
+var smallestWidth = 0,
+smallestHeight = 0,
+largestWidth = 100,
+largestHeight = 100;
 
-
-
+function validOption(which, param){
+	var valid = true;
+	if(which == 'tile'){
+		if(typeof param.width !== 'number') valid = false;
+		if(typeof param.height !== 'number') valid = false;
+		if(param.width >= smallestWidth && param.width < largestWidth) valid = false;
+		if(param.width >= smallestHeight && param.width < largestHeight) valid = false;
+	}
+	
+	return valid;
+}
 
 //  Class Wall
 	var canvas, ctx;
 
-    function Wall(id, idParent) {
+    function Wall(id, idParent, params) {
 	    var self = this;
 	    this.id = id;
 	    this.idParent = idParent;
 	    this.width = $(window).width();
 	    this.height = $(window).height();
-	    this.tile = {
+	    this.tile = params && params.tile && validOption('tile', params.tile)?params.tile:{
 	        width: 50,
 	        height: 50,
-	        updateNumberTile: function () {
+	        
+	    }
+	    this.tile.updateNumberTile = function () {
 	            this.numberRow = Math.ceil(self.width / this.width),
 	            this.numberCol = Math.ceil(self.height / this.height)
 	        }
-	    }
 	    
 	    //  Handle the change of scale
 	    this.scale = 1;
@@ -80,8 +94,8 @@
 	        ctx.clearRect(0, 0, self.width, self.height);
 	        
 	        //  Draw rectangles
-	        for (var i = 0; i <= self.tile.numberRow; i++) {
-	        	for (var j = 0; j <= self.tile.numberCol; j++) {
+	        for (var i = 0; i <= self.tile.numberRow/2; i++) {
+	        	for (var j = 0; j <= self.tile.numberCol/2; j++) {
 	        	
 	        		var currentPoster = array[this.current.tileX + i][this.current.tileY + j];
 	        		
@@ -161,14 +175,14 @@ function Poster() {
 		//  If the poster is in the viewport and not blacked
 		} else if ( this.inViewport == true && this.blacked == false ){
 			if ( this.color.alpha < 1 ) {
-        		this.color.alpha = easeOutCubic(this.time, 0, 1, 60);
+        		this.color.alpha = easeOutCubic(this.time, 0, 1, 600);
         		this.time++;
     		}
     		this.rgba = "rgba(" + this.color.red + "," + this.color.green + "," + this.color.blue  + "," + this.color.alpha + ")";
     	
     	//  If other case throw error
 		} else {
-			console.log( "ERROR : FADE PROBLEM" );
+			console.error( "FADE PROBLEM" );
 		}
 		
 	}
