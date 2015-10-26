@@ -1,42 +1,26 @@
-//  Bind buttons
-	$('#plus').click(function () {
-		wall.scale = wall.scale + 0.1;
-		wall.render(posters);
-	});
-	
-	$('#moins').click(function () {
-		wall.scale = wall.scale - 0.1;
-		wall.render(posters);
-	});
-
 //  Bind keys
 	$(document).keydown(function (e) {
 		switch (e.which) {
 		
 		    case 37:
 		        // left
-		        wall.current.positionX--;
-				wall.viewport.minX--;
-				wall.render(posters);
+
 		        break;
 		
 		    case 38:
 		        // up
-		        wall.current.positionY++;
-				wall.render(posters);
+		        wall.scale += 0.05;
+				wall.render();
 		        break;
 		
 		    case 39:
 		        // right
-		        wall.current.positionX++;
-				wall.viewport.minX++;
-				wall.render(posters);
 		        break;
 		
 		    case 40:
 		        // down
-		        wall.current.positionY--;
-				wall.render(posters);
+		        wall.scale -= 0.05;
+				wall.render();
 		        break;
 		
 		    default:
@@ -102,7 +86,9 @@
 	    if(flag === 0){
 	    
 	    	//  Click
-	        wall.getTileClicked(mouseX, mouseY);
+	        var target = wall.getTileClicked(mouseX, mouseY);
+	        console.log(target);
+	        OpenInNewTab(target.image.src);
 	        
 	    }
 	    else if(flag === 1){

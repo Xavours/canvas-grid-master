@@ -1,34 +1,28 @@
 //  Class Wall
 	var canvas, ctx;
 
-    function Wall(id, idParent, params) {
+    function Wall(id, idParent, array, params) {
 	    var self = this;
 	    this.id = id;
 	    this.idParent = idParent;
+	    this.source = array;
 	    this.width = $(window).width();
 	    this.height = $(window).height();
 	    
 	    //  Default settings
 	    this.settings = {
-		    tileWidth: 200,
-		    tileHeight: 200,
+		    tileWidth: 300,
+		    tileHeight: 400,
 		    content: 'image',
 		    fadeAnimation: 'easeOutCubic'
 	    }
 	    
 	    //  Get new settings
-	    params && validOption('tile', params.tile)?$.extend( this.settings, params ):console.error('problem');
-
-	    /*
-this.tile = params && params.tile && validOption('tile', params.tile)?params.tile:{
-	        width: 50,
-	        height: 50,
-	        
-	    }
-*/
+	    params && validOption(params)?$.extend( this.settings, params ):console.error('problem');
+	    
 	    this.updateNumberTile = function () {
-	            this.numberRow = Math.ceil(this.width / this.settings.tileWidth) + 1,
-	            this.numberCol = Math.ceil(this.height / this.settings.tileHeight) + 1
+	            this.numberRow = Math.ceil(this.width / this.factorWidth) + 1,
+	            this.numberCol = Math.ceil(this.height / this.factorHeight) + 1
 	        }
 	    
 	    //  Handle the change of scale
@@ -56,10 +50,10 @@ this.tile = params && params.tile && validOption('tile', params.tile)?params.til
 	        
 	        //  Get the first tile on the upper left corner
 	        getTile: function (x, y) {
-	            this.tileX = Math.floor(x / self.settings.tileWidth) + 1;
-	            this.offsetX = self.settings.tileWidth - ( x % self.settings.tileWidth );
-	            this.tileY = Math.floor(y / self.settings.tileHeight) + 1;
-	            this.offsetY =  self.settings.tileHeight - ( y % self.settings.tileHeight );
+	            this.tileX = Math.floor(x / self.factorWidth) + 1;
+	            this.offsetX = self.factorWidth - ( x % self.factorWidth );
+	            this.tileY = Math.floor(y / self.factorHeight) + 1;
+	            this.offsetY =  self.factorHeight - ( y % self.factorHeight );
 	        }
 	    }
 	    
@@ -76,18 +70,20 @@ this.tile = params && params.tile && validOption('tile', params.tile)?params.til
 		    if ( mouseX < this.current.offsetX ) {
 		        var tileX = 0;
 	        } else {
-		        var tileX = Math.floor(( mouseX - this.current.offsetX ) / this.settings.tileWidth + 1);
+		        var tileX = Math.floor(( mouseX - this.current.offsetX ) / this.factorWidth + 1);
 	        }
 	        if ( mouseY < this.current.offsetY ) {
 		        var tileY = 0;
 	        } else {
-		        var tileY = Math.floor(( mouseY - this.current.offsetY ) / this.settings.tileHeight + 1);
+		        var tileY = Math.floor(( mouseY - this.current.offsetY ) / this.factorHeight + 1);
 	        }
-	        return 
+	        
+	        console.log(tileX + ' / ' + tileY);
+	        return this.source[tileX, tileY]; 
 	    }
 	    
 	    //  Rendering methods
-	    this.render = function (array) {
+	    this.render = function () {
 	    
 	    	//  Update Data
 	        this.updateScale();
@@ -98,16 +94,16 @@ this.tile = params && params.tile && validOption('tile', params.tile)?params.til
 	        ctx.clearRect(0, 0, self.width, self.height);
 	        
 	        //  Chosse rendering mode
-	        if (this.settings.content == 'image') this.drawImages(array);
-	        if (this.settings.content == 'rectangle') this.drawRectangles(array);
+	        if (this.settings.content == 'image') this.drawImages();
+	        if (this.settings.content == 'rectangle') this.drawRectangles();
 	        
 	    }
 	    
-	    this.drawRectangles = function (array) {
+	    this.drawRectangles = function () {
 	    	for (var i = 0; i <self.numberRow; i++) {
 	        	for (var j = 0; j <self.numberCol; j++) {
 	        	
-	        		var currentPoster = array[this.current.tileX + i][this.current.tileY + j];
+	        		var currentPoster = this.source[this.current.tileX + i][this.current.tileY + j];
 	        		
 	        		//  Get the color of the rectangle
 	        		currentPoster.fade();
@@ -118,53 +114,56 @@ this.tile = params && params.tile && validOption('tile', params.tile)?params.til
 				        if ( j <1) {
 					        ctx.fillRect(i*this.current.offsetX, j*this.current.offsetY, this.current.offsetX, this.current.offsetY);
 				        } else {
-					        ctx.fillRect(i*this.current.offsetX, this.current.offsetY + (j-1)*self.settings.tileHeight, this.current.offsetX, self.settings.tileHeight);
+					        ctx.fillRect(i*this.current.offsetX, this.current.offsetY + (j-1)*self.factorHeight, this.current.offsetX, self.factorHeight);
 						}
 						
 					} else {
 						
 						if ( j <1) {
-					        ctx.fillRect(this.current.offsetX + (i-1)*self.settings.tileWidth, j*this.current.offsetY, self.settings.tileWidth, this.current.offsetY);
+					        ctx.fillRect(this.current.offsetX + (i-1)*self.factorWidth, j*this.current.offsetY, self.factorWidth, this.current.offsetY);
 				        } else {
-					        ctx.fillRect(this.current.offsetX + (i-1)*self.settings.tileWidth, this.current.offsetY + (j-1)*self.settings.tileHeight, self.settings.tileWidth, self.settings.tileHeight)
+					        ctx.fillRect(this.current.offsetX + (i-1)*self.factorWidth, this.current.offsetY + (j-1)*self.factorHeight, self.factorWidth, self.factorHeight)
 						}
 					}
 				}
 		    }
 	    }
 	    
-	    this.drawImages = function (array) {
+	    this.drawImages = function () {
 		    
 		    var proportion = 1;
 	        for (var i = 0; i <self.numberRow; i++) {
 	        	for (var j = 0; j <self.numberCol; j++) {
 	        	
-	        		var currentPoster = array[this.current.tileX + i][this.current.tileY + j];
+	        		var currentPoster = this.source[this.current.tileX + i][this.current.tileY + j];
 	        		
 	        		//  Get the source of images
 	        		img = library[currentPoster.image.src];
-	        		//  console.log(self.settings.tileWidth + '/' + img.height * (self.settings.tileWidth/img.width));
+	        		
+	        		//  Get the alpha
+	        		currentPoster.fade();
+	        		ctx.globalAlpha = currentPoster.color.alpha;
 			        
 			        if ( i <1) {
 				        
 				        if ( j <1) {
-					        ctx.drawImage(img, 0, 0, self.settings.tileWidth, img.height * (self.settings.tileWidth/img.width), i*this.current.offsetX, j*this.current.offsetY, this.current.offsetX, this.current.offsetY);
+					        ctx.drawImage(img, this.settings.tileWidth-this.current.offsetX, this.settings.tileHeight-this.current.offsetY, this.current.offsetX, this.current.offsetY, i*this.current.offsetX, j*this.current.offsetY, this.current.offsetX, this.current.offsetY);
 				        } else {
-					        ctx.drawImage(img, 0, 0, self.settings.tileWidth, img.height * (self.settings.tileWidth/img.width), i*this.current.offsetX, this.current.offsetY + (j-1)*self.settings.tileHeight, this.current.offsetX, self.settings.tileHeight);
+					        ctx.drawImage(img, this.settings.tileWidth-this.current.offsetX, 0, this.current.offsetX, this.settings.tileHeight, i*this.current.offsetX, this.current.offsetY + (j-1)*self.factorHeight, this.current.offsetX, self.factorHeight);
 						}
 						
 					} else {
 						
 						if ( j <1) {
-					        ctx.drawImage(img, 0, 0, self.settings.tileWidth, img.height * (self.settings.tileWidth/img.width), this.current.offsetX + (i-1)*self.settings.tileWidth, j*this.current.offsetY, self.settings.tileWidth, this.current.offsetY);
+					        ctx.drawImage(img, 0, this.settings.tileHeight-this.current.offsetY, this.settings.tileWidth, this.current.offsetY, this.current.offsetX + (i-1)*self.factorWidth, j*this.current.offsetY, self.factorWidth, this.current.offsetY);
 				        } else {
-					        ctx.drawImage(img, 0, 0, self.settings.tileWidth, img.height * (self.settings.tileWidth/img.width), this.current.offsetX + (i-1)*self.settings.tileWidth, this.current.offsetY + (j-1)*self.settings.tileHeight, self.settings.tileWidth, self.settings.tileHeight)
+					        ctx.drawImage(img, 0, 0, this.settings.tileWidth, this.settings.tileHeight, this.current.offsetX + (i-1)*self.factorWidth, this.current.offsetY + (j-1)*self.factorHeight, self.factorWidth, self.factorHeight)
 						}
 					}
 				}
 		    } 
 	    }
-		}
+	}
 
 //  Class Poster
 	function Poster() {
@@ -176,7 +175,7 @@ this.tile = params && params.tile && validOption('tile', params.tile)?params.til
 		    alpha: 0
 		};
 		this.image = {
-		    src: randomPick(0, 5)
+		    src: randomPick(0, library.length)
 		};
 		this.width = 50;
 		this.height = 50;
