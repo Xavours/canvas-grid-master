@@ -1,24 +1,3 @@
-//  Pick random number
-    function randomPick(min, max) {
-    return Math.floor(Math.random() * max) + min;
-    }
-var smallestWidth = 0,
-smallestHeight = 0,
-largestWidth = 100,
-largestHeight = 100;
-
-function validOption(which, param){
-	var valid = true;
-	if(which == 'tile'){
-		if(typeof param.width !== 'number') valid = false;
-		if(typeof param.height !== 'number') valid = false;
-		if(param.width >= smallestWidth && param.width < largestWidth) valid = false;
-		if(param.width >= smallestHeight && param.width < largestHeight) valid = false;
-	}
-	
-	return valid;
-}
-
 //  Class Wall
 	var canvas, ctx;
 
@@ -28,21 +7,35 @@ function validOption(which, param){
 	    this.idParent = idParent;
 	    this.width = $(window).width();
 	    this.height = $(window).height();
-	    this.tile = params && params.tile && validOption('tile', params.tile)?params.tile:{
+	    
+	    //  Default settings
+	    this.settings = {
+		    tileWidth: 200,
+		    tileHeight: 200,
+		    content: 'image',
+		    fadeAnimation: 'easeOutCubic'
+	    }
+	    
+	    //  Get new settings
+	    params && validOption('tile', params.tile)?$.extend( this.settings, params ):console.error('problem');
+
+	    /*
+this.tile = params && params.tile && validOption('tile', params.tile)?params.tile:{
 	        width: 50,
 	        height: 50,
 	        
 	    }
-	    this.tile.updateNumberTile = function () {
-	            this.numberRow = Math.ceil(self.width / this.width),
-	            this.numberCol = Math.ceil(self.height / this.height)
+*/
+	    this.updateNumberTile = function () {
+	            this.numberRow = Math.ceil(this.width / this.settings.tileWidth) + 1,
+	            this.numberCol = Math.ceil(this.height / this.settings.tileHeight) + 1
 	        }
 	    
 	    //  Handle the change of scale
 	    this.scale = 1;
 	    this.updateScale = function () {
-	        this.factorWidth = this.tile.width * this.scale;
-	        this.factorHeight = this.tile.height * this.scale;
+	        this.factorWidth = this.settings.tileWidth * this.scale;
+	        this.factorHeight = this.settings.tileHeight * this.scale;
 	    }
 	    
 	    //  Take care of the viewport = "what appears on the window"
@@ -53,24 +46,20 @@ function validOption(which, param){
 	        maxY: self.height
 	    }
 	    this.updateViewport = function () {
-	        this.factorWidth = this.tile.width * this.scale;
-	        this.factorHeight = this.tile.height * this.scale;
-	    },
-	    
+	        this.factorWidth = this.settings.tileWidth * this.scale;
+	        this.factorHeight = this.settings.tileHeight * this.scale;
+	    }
 	    
 	    this.current = {
 	        positionX: Math.floor(self.width / 2),
 	        positionY: Math.floor(self.height / 2),
 	        
 	        //  Get the first tile on the upper left corner
-	        getCurrentTile: function (x, y) {
-	            this.tileX = Math.floor(x / self.tile.width) + 1;
-	            this.offsetX = self.tile.width - ( x % self.tile.width );
-	            this.tileY = Math.floor(y / self.tile.height) + 1;
-	            this.offsetY =  self.tile.height - ( y % self.tile.height ); 
-	            
-	            //console.log('current.tileX : ' + this.tileX + ' / current.offsetX : ' + this.offsetX);
-	            //console.log('current.tileY : ' + this.tileY + ' / current.offsetY : ' + this.offsetY);
+	        getTile: function (x, y) {
+	            this.tileX = Math.floor(x / self.settings.tileWidth) + 1;
+	            this.offsetX = self.settings.tileWidth - ( x % self.settings.tileWidth );
+	            this.tileY = Math.floor(y / self.settings.tileHeight) + 1;
+	            this.offsetY =  self.settings.tileHeight - ( y % self.settings.tileHeight );
 	        }
 	    }
 	    
@@ -82,20 +71,41 @@ function validOption(which, param){
 			
 	    }
 	    
-	    //  Render the Wall
+	    //  Events method
+	    this.getTileClicked = function (mouseX, mouseY) {
+		    if ( mouseX < this.current.offsetX ) {
+		        var tileX = 0;
+	        } else {
+		        var tileX = Math.floor(( mouseX - this.current.offsetX ) / this.settings.tileWidth + 1);
+	        }
+	        if ( mouseY < this.current.offsetY ) {
+		        var tileY = 0;
+	        } else {
+		        var tileY = Math.floor(( mouseY - this.current.offsetY ) / this.settings.tileHeight + 1);
+	        }
+	        return 
+	    }
+	    
+	    //  Rendering methods
 	    this.render = function (array) {
 	    
 	    	//  Update Data
 	        this.updateScale();
-	        this.tile.updateNumberTile();
-	        this.current.getCurrentTile(this.current.positionX, this.current.positionY)
+	        this.updateNumberTile();
+	        this.current.getTile(this.current.positionX, this.current.positionY)
 	        
 	        //  Clear canvas
 	        ctx.clearRect(0, 0, self.width, self.height);
 	        
-	        //  Draw rectangles
-	        for (var i = 0; i <self.tile.numberRow; i++) {
-	        	for (var j = 0; j <self.tile.numberCol; j++) {
+	        //  Chosse rendering mode
+	        if (this.settings.content == 'image') this.drawImages(array);
+	        if (this.settings.content == 'rectangle') this.drawRectangles(array);
+	        
+	    }
+	    
+	    this.drawRectangles = function (array) {
+	    	for (var i = 0; i <self.numberRow; i++) {
+	        	for (var j = 0; j <self.numberCol; j++) {
 	        	
 	        		var currentPoster = array[this.current.tileX + i][this.current.tileY + j];
 	        		
@@ -108,85 +118,119 @@ function validOption(which, param){
 				        if ( j <1) {
 					        ctx.fillRect(i*this.current.offsetX, j*this.current.offsetY, this.current.offsetX, this.current.offsetY);
 				        } else {
-					        ctx.fillRect(i*this.current.offsetX, this.current.offsetY + (j-1)*self.tile.height, this.current.offsetX, self.tile.height);
+					        ctx.fillRect(i*this.current.offsetX, this.current.offsetY + (j-1)*self.settings.tileHeight, this.current.offsetX, self.settings.tileHeight);
 						}
 						
 					} else {
 						
 						if ( j <1) {
-					        ctx.fillRect(this.current.offsetX + (i-1)*self.tile.width, j*this.current.offsetY, self.tile.width, this.current.offsetY);
+					        ctx.fillRect(this.current.offsetX + (i-1)*self.settings.tileWidth, j*this.current.offsetY, self.settings.tileWidth, this.current.offsetY);
 				        } else {
-					        ctx.fillRect(this.current.offsetX + (i-1)*self.tile.width, this.current.offsetY + (j-1)*self.tile.height, self.tile.width, self.tile.height)
+					        ctx.fillRect(this.current.offsetX + (i-1)*self.settings.tileWidth, this.current.offsetY + (j-1)*self.settings.tileHeight, self.settings.tileWidth, self.settings.tileHeight)
 						}
 					}
 				}
 		    }
-	        
 	    }
-}
+	    
+	    this.drawImages = function (array) {
+		    
+		    var proportion = 1;
+	        for (var i = 0; i <self.numberRow; i++) {
+	        	for (var j = 0; j <self.numberCol; j++) {
+	        	
+	        		var currentPoster = array[this.current.tileX + i][this.current.tileY + j];
+	        		
+	        		//  Get the source of images
+	        		img = library[currentPoster.image.src];
+	        		//  console.log(self.settings.tileWidth + '/' + img.height * (self.settings.tileWidth/img.width));
+			        
+			        if ( i <1) {
+				        
+				        if ( j <1) {
+					        ctx.drawImage(img, 0, 0, self.settings.tileWidth, img.height * (self.settings.tileWidth/img.width), i*this.current.offsetX, j*this.current.offsetY, this.current.offsetX, this.current.offsetY);
+				        } else {
+					        ctx.drawImage(img, 0, 0, self.settings.tileWidth, img.height * (self.settings.tileWidth/img.width), i*this.current.offsetX, this.current.offsetY + (j-1)*self.settings.tileHeight, this.current.offsetX, self.settings.tileHeight);
+						}
+						
+					} else {
+						
+						if ( j <1) {
+					        ctx.drawImage(img, 0, 0, self.settings.tileWidth, img.height * (self.settings.tileWidth/img.width), this.current.offsetX + (i-1)*self.settings.tileWidth, j*this.current.offsetY, self.settings.tileWidth, this.current.offsetY);
+				        } else {
+					        ctx.drawImage(img, 0, 0, self.settings.tileWidth, img.height * (self.settings.tileWidth/img.width), this.current.offsetX + (i-1)*self.settings.tileWidth, this.current.offsetY + (j-1)*self.settings.tileHeight, self.settings.tileWidth, self.settings.tileHeight)
+						}
+					}
+				}
+		    } 
+	    }
+		}
 
 //  Class Poster
-function Poster() {
-	var self = this;
-	this.color = {
-	    red: randomPick(1, 255),
-	    green: randomPick(1, 255),
-	    blue: randomPick(1, 255),
-	    alpha: 0
-	};
-	this.width = 50;
-	this.height = 50;
-	this.inViewport = false;
-	this.blacked = true;
-	this.factor = 1;
-	this.time = 0;
-	this.rgba;
-	
-	//  Determine what is the level of fade of the tile
-	this.fade = function () {
+	function Poster() {
+		var self = this;
+		this.color = {
+		    red: randomPick(1, 255),
+		    green: randomPick(1, 255),
+		    blue: randomPick(1, 255),
+		    alpha: 0
+		};
+		this.image = {
+		    src: randomPick(0, 5)
+		};
+		this.width = 50;
+		this.height = 50;
+		this.inViewport = false;
+		this.blacked = true;
+		this.factor = 1;
+		this.time = 0;
+		this.rgba;
 		
-		//  If the poster is not in the viewport
-		if ( this.inViewport == false && this.blacked == true ) {
-			this.rgba = "rgba(0, 0, 0, 1)";
+		//  Determine what is the level of fade of the tile
+		this.fade = function () {
 			
-			//  Get a chance to get the poster unblacked
-			var chance = randomPick(1, 45 - this.factor);
-			if ( chance == 1 ) {
-				this.blacked = false;
-				this.factor = 1;
+			//  If the poster is not in the viewport
+			if ( this.inViewport == false && this.blacked == true ) {
+				this.rgba = "rgba(0, 0, 0, 1)";
+				
+				//  Get a chance to get the poster unblacked
+				var chance = randomPick(1, 45 - this.factor);
+				if ( chance == 1 ) {
+					this.blacked = false;
+					this.factor = 1;
+				} else {
+					this.factor++;
+				}
+				
+				this.inViewport = true;
+			
+			//  If the poster is in the viewport but blacked
+			} else if ( this.inViewport == true && this.blacked == true ) {
+				
+				//  Get a chance to get the poster unblacked
+				var chance = randomPick(1, 45 - this.factor);
+				if ( chance == 1 ) {
+					this.blacked = false;
+					this.factor = 1;
+				} else {
+					this.factor++;
+				}
+			
+			//  If the poster is in the viewport and not blacked
+			} else if ( this.inViewport == true && this.blacked == false ){
+				if ( this.color.alpha < 1 ) {
+	        		this.color.alpha = easeOutCubic(this.time, 0, 1, 600);
+	        		this.time++;
+	    		}
+	    		this.rgba = "rgba(" + this.color.red + "," + this.color.green + "," + this.color.blue  + "," + this.color.alpha + ")";
+	    	
+	    	//  If other case throw error
 			} else {
-				this.factor++;
+				console.error( "FADE PROBLEM" );
 			}
 			
-			this.inViewport = true;
-		
-		//  If the poster is in the viewport but blacked
-		} else if ( this.inViewport == true && this.blacked == true ) {
-			
-			//  Get a chance to get the poster unblacked
-			var chance = randomPick(1, 45 - this.factor);
-			if ( chance == 1 ) {
-				this.blacked = false;
-				this.factor = 1;
-			} else {
-				this.factor++;
-			}
-		
-		//  If the poster is in the viewport and not blacked
-		} else if ( this.inViewport == true && this.blacked == false ){
-			if ( this.color.alpha < 1 ) {
-        		this.color.alpha = easeOutCubic(this.time, 0, 1, 600);
-        		this.time++;
-    		}
-    		this.rgba = "rgba(" + this.color.red + "," + this.color.green + "," + this.color.blue  + "," + this.color.alpha + ")";
-    	
-    	//  If other case throw error
-		} else {
-			console.error( "FADE PROBLEM" );
 		}
-		
 	}
-}
 
 //  Generate array
 function generate(array) {

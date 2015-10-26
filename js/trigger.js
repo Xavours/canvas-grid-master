@@ -102,7 +102,8 @@
 	    if(flag === 0){
 	    
 	    	//  Click
-	        console.log("click");
+	        wall.getTileClicked(mouseX, mouseY);
+	        
 	    }
 	    else if(flag === 1){
 	    
