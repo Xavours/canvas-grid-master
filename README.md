@@ -11,7 +11,8 @@ I am exploring two options :
 ## To Do :
 
 ### Features
-* Support image
+* Improve image support
+* Add fade in when image appears
 * Optimize draw function
 * Add scaling
 * Redo and complete the triggers
