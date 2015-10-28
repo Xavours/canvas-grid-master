@@ -35,19 +35,19 @@
 	    this.id = id;
 	    this.idParent = idParent;
 	    this.source = array;
-	    this.width = $(window).width();
-	    this.height = $(window).height();
+	    this.width = window.innerWidth;
+	    this.height = window.innerHeight;
 	    
 	    //  Default settings
 	    this.settings = {
 		    tileWidth: 300,
 		    tileHeight: 400,
-		    content: 'image',
+		    content: 'rectangle',
 		    fadeAnimation: 'easeOutCubic'
 	    }
 	    
 	    //  Get new settings
-	    params && validOption(params)?$.extend( this.settings, params ):console.error('problem');
+	    params && validOptions(params)?$.extend( this.settings, params ):console.error('problem');
 	    
 	    this.updateNumberTile = function () {
 	            this.numberRow = Math.ceil(this.width / this.factorWidth) + 1,
@@ -68,14 +68,17 @@
 	        maxX: self.width,
 	        maxY: self.height
 	    }
-	    this.updateViewport = function () {
-	        this.factorWidth = this.settings.tileWidth * this.scale;
-	        this.factorHeight = this.settings.tileHeight * this.scale;
+	    this.updateSizeViewport = function () {
+	    	this.width = canvas.width = window.innerWidth;
+			this.height = canvas.height = window.innerHeight;
+			console.log(this.width + '  //  ' + this.height);
+			
 	    }
 	    
 	    this.current = {
 	        positionX: Math.floor(self.width / 2),
 	        positionY: Math.floor(self.height / 2),
+	        time: 0,
 	        
 	        //  Get the first tile on the upper left corner
 	        getTile: function (x, y) {
