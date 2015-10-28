@@ -9,9 +9,11 @@
 	// let the pan gesture support all directions.
 	// this will block the vertical scrolling on a touch-device while on the element
 	eventHandler.get('pan').set({ direction: Hammer.DIRECTION_ALL });
+	eventHandler.get('pinch').set({ enable: true });
+	eventHandler.get('rotate').set({ enable: true });
 	
 	// listen to events...
-	eventHandler.on("panleft panright panup pandown tap press", function(ev) {
+	eventHandler.on("panleft panright panup pandown tap press pinch rotate", function(ev) {
 	    console.log(ev.type +" gesture detected.");
 	});
 
@@ -25,6 +27,7 @@
 		var mouseX, mouseY;
 		var deltaX = 0;
 		var deltaY = 0;
+		var intervalCounter = 0;
 		
 	function OpenInNewTab(url) {
 		var win = window.open(url, '_blank');
@@ -32,12 +35,32 @@
 	}
 	
 	//  Bind pan to scroll in any direction
-	eventHandler.on("panleft panright panup pandown", function(e) {
+	eventHandler.on("panstart panmove", function(e) {
         
-        console.log(eventHandler.recognizers[3].pX + ' // ' + eventHandler.recognizers[3].pY);
+        var lastX = wall.current.positionX;
+        var lastY = wall.current.positionY;
         
-        wall.current.positionX += -eventHandler.recognizers[3].pX;
-        wall.current.positionY += -eventHandler.recognizers[3].pY;
+        /*
+var interval = window.setInterval(function() {
+        
+        	
+        	wall.current.positionX = Math.floor(easeOutCubic(intervalCounter, lastX, -eventHandler.recognizers[3].pX, 6000));
+        	wall.current.positionY = Math.floor(easeOutCubic(intervalCounter, lastY, -eventHandler.recognizers[3].pY, 6000));
+        	console.log(wall.current.positionX + ' // ' + wall.current.positionY);
+        	
+        
+	        if ( intervalCounter > 300 ) {
+		        clearInterval(interval);
+		        intervalCounter = 0;
+	        }
+	        
+	        intervalCounter++;
+        
+        },20);
+*/
+        console.log(e);
+        wall.current.positionX += -(e.deltaX);
+        wall.current.positionY += -(e.deltaY);
 	});
 	
 //  Bind Window resize
