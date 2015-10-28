@@ -13,9 +13,11 @@
 	eventHandler.get('rotate').set({ enable: true });
 	
 	// listen to events...
-	eventHandler.on("panleft panright panup pandown tap press pinch rotate", function(ev) {
+	/*
+eventHandler.on("panleft panright panup pandown tap press pinch rotate", function(ev) {
 	    console.log(ev.type +" gesture detected.");
 	});
+*/
 
 //  Bind Mouse control
 
