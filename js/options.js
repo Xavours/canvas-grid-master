@@ -132,6 +132,13 @@ function validOptions(param){
 			}
 		}
 		
+		if ( param.hasOwnProperty('scale') ) {
+			if( Object.toType(param.scale) !== 'number'){
+				console.error('scale is not a number');
+				valid = false;
+			}
+		}
+		
 		if ( param.hasOwnProperty('minScale') ) {
 			if( Object.toType(param.minScale) !== 'number'){
 				console.error('minScale is not a number');
