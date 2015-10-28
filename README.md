@@ -1,11 +1,7 @@
 # canvas-grid-master
 
 Canvas-grid-master is an endless grid in canvas to browse a bunch of images stored in a folder.
-Work in progress.
-
-I am exploring two options :
-* One that starts from that GitHub project : https://github.com/spoeken/infinite-canvas-grid
-* And another from scratch (more succesfull for the moment)
+Work in progress. Will be probably released in November 2015.
 
 
 ## To Do :
@@ -28,11 +24,12 @@ I am exploring two options :
 
 
 ## Documentation
+Documentation to come.
 
 ### Initializing
 ```javascript
 <script type="text/javascript">
-  var wall = new Wall('canvas','viewport',array});
+  var wall = new Wall('canvas','viewport', array});
 </script>
 ```
 
