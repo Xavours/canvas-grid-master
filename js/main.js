@@ -43,11 +43,14 @@
 		    tileWidth: 300,
 		    tileHeight: 400,
 		    content: 'rectangle',
-		    fadeAnimation: 'easeOutCubic'
+		    fadeAnimation: 'easeOutCubic',
+		    scaleOn: true,
+		    minScale: 0.05,
+		    maxScale: 2
 	    }
 	    
 	    //  Get new settings
-	    params && validOptions(params)?$.extend( this.settings, params ):console.error('problem');
+	    params && validOptions(params)?$.extend( this.settings, params ):console.error('Some options are not valid');
 	    
 	    this.updateNumberTile = function () {
 	            this.numberRow = Math.ceil(this.width / this.factorWidth) + 1,
