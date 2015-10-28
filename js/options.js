@@ -68,7 +68,7 @@ function validArg(param){
 }
 
 //  Valid Options
-function validOption(param){
+function validOptions(param){
 	var valid = true;
 	
 	//  Check if param is an object
@@ -103,10 +103,10 @@ function validOption(param){
 	
 	if ( param.hasOwnProperty('content') ) {
 		if( Object.toType(param.content) !== 'string'){
-			console.error('tileHeight is not a string');
+			console.error('content is not a string');
 			valid = false;
-		} else if ( param.content !== 'image' || param.content !== 'rectangle') {
-			console.error('content : ' + param.content + 'is not a valid option');
+		} else if ( param.content !== 'image' && param.content !== 'rectangle') {
+			console.error('content : ' + param.content + ' is not a valid option');
 			valid = false;
 		}
 	}
@@ -116,7 +116,7 @@ function validOption(param){
 			console.error('tileHeight is not a string');
 			valid = false;
 		} else if ( param.fadeAnimation !== 'easeOutCubic' ) {
-			console.error('fadeAnimation : ' + param.fadeAnimation + 'is not a valid option');
+			console.error('fadeAnimation : ' + param.fadeAnimation + ' is not a valid option');
 			valid = false;
 		}
 	}
