@@ -47,7 +47,7 @@
 	    
 	    <script src='js/main.js' type="text/javascript"></script>
 	    <script src='js/options.js' type="text/javascript"></script>
-	    <script src='js/trigger-2.js' type="text/javascript"></script>
+	    <script src='js/trigger.js' type="text/javascript"></script>
 	    <script src='js/easing.js' type="text/javascript"></script>
 
 	    
@@ -65,9 +65,12 @@
 	    					options = {
 		    					tileWidth: 300,
 		    					tileHeight: 400,
-		    					content: 'image'
+		    					content: 'image',
+		    					scaleOn: true,
+		    					scale: 1,
+		    					minScale: 0.05,
+		    					masScale: 2
 	    					});
-	    wall.scale = 1;
 	    wall.create();
 	    
 	    function update() { 
