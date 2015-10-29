@@ -43,11 +43,15 @@
 		    tileWidth: 300,
 		    tileHeight: 400,
 		    content: 'rectangle',
-		    fadeAnimation: 'easeOutCubic'
+		    fadeAnimation: 'easeOutCubic',
+		    scaleOn: true,
+		    scale: 1,
+		    minScale: 0.05,
+		    maxScale: 2
 	    }
 	    
 	    //  Get new settings
-	    params && validOptions(params)?$.extend( this.settings, params ):console.error('problem');
+	    params && validOptions(params)?$.extend( this.settings, params ):console.error('Some options are not valid');
 	    
 	    this.updateNumberTile = function () {
 	            this.numberRow = Math.ceil(this.width / this.factorWidth) + 1,
@@ -55,7 +59,7 @@
 	        }
 	    
 	    //  Handle the change of scale
-	    this.scale = 1;
+	    this.scale = this.settings.scale;
 	    this.updateScale = function () {
 	        this.factorWidth = this.settings.tileWidth * this.scale;
 	        this.factorHeight = this.settings.tileHeight * this.scale;
@@ -71,7 +75,6 @@
 	    this.updateSizeViewport = function () {
 	    	this.width = canvas.width = window.innerWidth;
 			this.height = canvas.height = window.innerHeight;
-			console.log(this.width + '  //  ' + this.height);
 			
 	    }
 	    
@@ -82,10 +85,30 @@
 	        
 	        //  Get the first tile on the upper left corner
 	        getTile: function (x, y) {
-	            this.tileX = Math.floor(x / self.factorWidth) + 1;
+	        
+	        	var newX, newY;
+	        	
+	        	//  Considering the scale factor
+	        	newX = Math.floor(x / self.factorWidth) + 1;
 	            this.offsetX = self.factorWidth - ( x % self.factorWidth );
-	            this.tileY = Math.floor(y / self.factorHeight) + 1;
+	            newY = Math.floor(y / self.factorHeight) + 1;
 	            this.offsetY =  self.factorHeight - ( y % self.factorHeight );
+	            
+	            //  Considering the fact that my grid is limited
+	            //  If a number is out of grid, the goal is to give him an id in the other side of the grid as it was a pattern
+	        	if ( newX < 0 || newX >= 250 ) {
+	        		( isEven( Math.floor( Math.abs(newX)/250) ) ) ? this.tileX = 250-Math.abs(newX) : this.tileX = Math.abs(newX)-250;
+	        	} else {
+		        	this.tileX = newX;
+	        	}
+	        	
+	        	if ( newY < 0 || newY >= 250 ) {
+	        		( isEven( Math.floor( Math.abs(newY)/250) ) ) ? this.tileY = 250-Math.abs(newY) : this.tileY = Math.abs(newY)-250;
+	        	} else {
+		        	this.tileY = newY;
+	        	}
+	        	
+	        	console.log(newX + ' -> ' + isEven(Math.floor(newX/250)) + ' -> ' + this.tileX + '  //  ' + newY + ' -> ' + isEven(Math.floor(newY/250)) + ' -> ' + this.tileY);
 	        }
 	    }
 	    
@@ -100,18 +123,18 @@
 	    //  Events method
 	    this.getTileClicked = function (mouseX, mouseY) {
 		    if ( mouseX < this.current.offsetX ) {
-		        var tileX = 0;
+		        var x = 0;
 	        } else {
-		        var tileX = Math.floor(( mouseX - this.current.offsetX ) / this.factorWidth + 1);
+		        var x = Math.floor(( mouseX - this.current.offsetX ) / this.factorWidth + 1);
 	        }
 	        if ( mouseY < this.current.offsetY ) {
-		        var tileY = 0;
+		        var y = 0;
 	        } else {
-		        var tileY = Math.floor(( mouseY - this.current.offsetY ) / this.factorHeight + 1);
+		        var y = Math.floor(( mouseY - this.current.offsetY ) / this.factorHeight + 1);
 	        }
 	        
-	        console.log(tileX + ' / ' + tileY);
-	        return this.source[tileX, tileY]; 
+	        console.log(x + ' / ' + y);
+	        return this.source[x, y]; 
 	    }
 	    
 	    //  Rendering methods
@@ -134,8 +157,10 @@
 	    this.drawRectangles = function () {
 	    	for (var i = 0; i <self.numberRow; i++) {
 	        	for (var j = 0; j <self.numberCol; j++) {
-	        	
-	        		var currentPoster = this.source[this.current.tileX + i][this.current.tileY + j];
+	        		
+	        		var x = (this.current.tileX+i) % 250;
+	        		var y = (this.current.tileY+i) % 250;
+	        		var currentPoster = this.source[x][y];
 	        		
 	        		//  Get the color of the rectangle
 	        		currentPoster.fade();
@@ -167,7 +192,11 @@
 	        for (var i = 0; i <self.numberRow; i++) {
 	        	for (var j = 0; j <self.numberCol; j++) {
 	        	
-	        		var currentPoster = this.source[this.current.tileX + i][this.current.tileY + j];
+	        		var x = (this.current.tileX+i) % 250;
+	        		var y = (this.current.tileY+j) % 250;
+	        		var currentPoster = this.source[x][y];
+	        		//console.log('donc : ' + x + '  //  ' + y);
+	        		
 	        		
 	        		//  Get the source of images
 	        		img = library[currentPoster.image.src];
@@ -278,4 +307,9 @@ function generate(array) {
 //  Pick random number
 function randomPick(min, max) {
 	return Math.floor(Math.random() * max) + min;
+}
+
+//  Return true if even number
+function isEven(n) {
+  return n == parseFloat(n) && !(n % 2);
 }
