@@ -122,17 +122,15 @@
 		        	this.tileY = newY;
 	        	}
 	        	
-	        	if (x != lastPositionX) {
+	        	//  Debug
+	        	/*
+if (x != lastPositionX) {
 	        		console.log('position : ' + x + ' / offset : ' + this.offsetX + ' / tile : ' + newX + ' / polarite : ' + isEven(Math.floor(newX/250)) + ' / tile : ' + this.tileX + ' / x : ' + (this.tileX % 250) );
 	        		lastPositionX = x;
 	        	}
-	        	
-	        	//console.log(this.positionX + '  //  ' + this.positionY);
-	        	//console.log(newX + ' -> ' + isEven(Math.floor(newX/250)) + ' -> ' + this.tileX + '  //  ' + newY + ' -> ' + isEven(Math.floor(newY/250)) + ' -> ' + this.tileY);
+*/
 	        }
-	        
-	        //  Get the right offset considering the scale   ???
-	        
+	      	        
 	    }
 	    
 	    //  Create the element "wall"
