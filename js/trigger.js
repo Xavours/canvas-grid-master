@@ -38,7 +38,7 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
         
         lastX = e.center.x;
         lastY = e.center.y;
-        console.log(lastX + ' // ' + lastY);
+        //console.log(lastX + ' // ' + lastY);
     
     });
 	
