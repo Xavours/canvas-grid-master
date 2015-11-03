@@ -29,6 +29,9 @@
 
 //  Class Wall
 	var canvas, ctx;
+	
+	//  Debug
+	var lastOffsetX = 1;
 
     function Wall(id, idParent, array, params) {
 	    var self = this;
@@ -108,8 +111,12 @@
 		        	this.tileY = newY;
 	        	}
 	        	
+	        	//console.log(this.positionX + '  //  ' + this.positionY);
 	        	console.log(newX + ' -> ' + isEven(Math.floor(newX/250)) + ' -> ' + this.tileX + '  //  ' + newY + ' -> ' + isEven(Math.floor(newY/250)) + ' -> ' + this.tileY);
 	        }
+	        
+	        //  Get the right offset considering the scale   ???
+	        
 	    }
 	    
 	    //  Create the element "wall"
@@ -133,7 +140,7 @@
 		        var y = Math.floor(( mouseY - this.current.offsetY ) / this.factorHeight + 1);
 	        }
 	        
-	        console.log(x + ' / ' + y);
+	        //console.log(x + ' / ' + y);
 	        return this.source[x, y]; 
 	    }
 	    
@@ -159,7 +166,7 @@
 	        	for (var j = 0; j <self.numberCol; j++) {
 	        		
 	        		var x = (this.current.tileX+i) % 250;
-	        		var y = (this.current.tileY+i) % 250;
+	        		var y = (this.current.tileY+j) % 250;
 	        		var currentPoster = this.source[x][y];
 	        		
 	        		//  Get the color of the rectangle
@@ -169,18 +176,29 @@
 			        if ( i <1) {
 				        
 				        if ( j <1) {
+				        					        	
 					        ctx.fillRect(i*this.current.offsetX, j*this.current.offsetY, this.current.offsetX, this.current.offsetY);
+					        
+					        text(x, y, 20, 20);
+					        
 				        } else {
-					        ctx.fillRect(i*this.current.offsetX, this.current.offsetY + (j-1)*self.factorHeight, this.current.offsetX, self.factorHeight);
+				        	
+				        	ctx.fillRect(i*this.current.offsetX, this.current.offsetY + (j-1)*this.factorHeight, this.current.offsetX, this.factorHeight);
+					        
+					        text(x, y, i*this.current.offsetX +20, this.current.offsetY + (j-1)*this.factorHeight + 20);
 						}
 						
 					} else {
 						
 						if ( j <1) {
-					        ctx.fillRect(this.current.offsetX + (i-1)*self.factorWidth, j*this.current.offsetY, self.factorWidth, this.current.offsetY);
+					        ctx.fillRect(this.current.offsetX + (i-1)*this.factorWidth, j*this.current.offsetY, this.factorWidth, this.current.offsetY);
+					        
+					        text(x, y, this.current.offsetX + (i-1)*this.factorWidth + 20, j*this.current.offsetY + 20);
 				        } else {
-					        ctx.fillRect(this.current.offsetX + (i-1)*self.factorWidth, this.current.offsetY + (j-1)*self.factorHeight, self.factorWidth, self.factorHeight)
-						}
+					        ctx.fillRect(this.current.offsetX + (i-1)*this.factorWidth, this.current.offsetY + (j-1)*this.factorHeight, this.factorWidth, this.factorHeight);
+					        
+					        text(x, y, this.current.offsetX + (i-1)*this.factorWidth + 20, this.current.offsetY + (j-1)*this.factorHeight + 20);
+						}					
 					}
 				}
 		    }
@@ -188,7 +206,6 @@
 	    
 	    this.drawImages = function () {
 		    
-		    var proportion = 1;
 	        for (var i = 0; i <self.numberRow; i++) {
 	        	for (var j = 0; j <self.numberCol; j++) {
 	        	
@@ -208,17 +225,27 @@
 			        if ( i <1) {
 				        
 				        if ( j <1) {
-					        ctx.drawImage(img, this.settings.tileWidth-this.current.offsetX, this.settings.tileHeight-this.current.offsetY, this.current.offsetX, this.current.offsetY, i*this.current.offsetX, j*this.current.offsetY, this.current.offsetX, this.current.offsetY);
+				        	
+				        	//  Debug
+				        	/*
+if (this.current.offsetX != lastOffsetX) {
+				        		console.log('scale :' + this.scale + ' / offset :' + this.current.offsetX + ' / corrected offset :' + (this.current.offsetX/this.scale));
+				        		lastOffsetX = this.current.offsetX;
+				        	}
+*/
+				        		
+					        ctx.drawImage(img, this.settings.tileWidth-(this.current.offsetX/this.scale), this.settings.tileHeight-(this.current.offsetY/this.scale), this.current.offsetX/this.scale, this.current.offsetY/this.scale, i*this.current.offsetX, j*this.current.offsetY, this.current.offsetX, this.current.offsetY);
 				        } else {
-					        ctx.drawImage(img, this.settings.tileWidth-this.current.offsetX, 0, this.current.offsetX, this.settings.tileHeight, i*this.current.offsetX, this.current.offsetY + (j-1)*self.factorHeight, this.current.offsetX, self.factorHeight);
+					        
+					        ctx.drawImage(img, this.settings.tileWidth-(this.current.offsetX/this.scale), 0, this.current.offsetX/this.scale, this.settings.tileHeight, i*this.current.offsetX, this.current.offsetY + (j-1)*this.factorHeight, this.current.offsetX, this.factorHeight);
 						}
 						
 					} else {
 						
 						if ( j <1) {
-					        ctx.drawImage(img, 0, this.settings.tileHeight-this.current.offsetY, this.settings.tileWidth, this.current.offsetY, this.current.offsetX + (i-1)*self.factorWidth, j*this.current.offsetY, self.factorWidth, this.current.offsetY);
+					        ctx.drawImage(img, 0, this.settings.tileHeight-(this.current.offsetY/this.scale), this.settings.tileWidth, this.current.offsetY/this.scale, this.current.offsetX + (i-1)*this.factorWidth, j*this.current.offsetY, this.factorWidth, this.current.offsetY);
 				        } else {
-					        ctx.drawImage(img, 0, 0, this.settings.tileWidth, this.settings.tileHeight, this.current.offsetX + (i-1)*self.factorWidth, this.current.offsetY + (j-1)*self.factorHeight, self.factorWidth, self.factorHeight)
+					        ctx.drawImage(img, 0, 0, this.settings.tileWidth, this.settings.tileHeight, this.current.offsetX + (i-1)*this.factorWidth, this.current.offsetY + (j-1)*this.factorHeight, this.factorWidth, this.factorHeight)
 						}
 					}
 				}
@@ -312,4 +339,11 @@ function randomPick(min, max) {
 //  Return true if even number
 function isEven(n) {
   return n == parseFloat(n) && !(n % 2);
+}
+
+//  Text
+function text(indiceX, indiceY, x, y) {
+	ctx.font="18px Arial";
+	ctx.fillStyle = "black";
+	ctx.fillText(indiceX + ' / ' + indiceY, x, y);
 }
