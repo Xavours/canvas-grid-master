@@ -7,12 +7,9 @@ Work in progress. Will be probably released in November 2015.
 ## To Do :
 
 ### Features
-* Improve image support
-* Add fade in when image appears
 * Optimize draw function
-* Redo and complete the triggers (add mouse wheel support)
-* Regenerate a bunch of tiles when the viewport is close to the limit of the array
-* Different mode to spread the tile without repetition
+* Different mode to spread the tile (pattern mode, limited continuous image)
+* Add method for basics events (click, hover etc.)
 
 
 ### Nice to have
@@ -20,7 +17,7 @@ Work in progress. Will be probably released in November 2015.
 
 
 ### Fix
-* Render bug on the first column when scale < 1
+* Scale fom the center of the screen
 
 
 ## Documentation
