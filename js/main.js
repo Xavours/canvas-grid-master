@@ -32,6 +32,7 @@
 	
 	//  Debug
 	var lastOffsetX = 1;
+	var lastPositionX = 1;
 
     function Wall(id, idParent, array, params) {
 	    var self = this;
@@ -92,10 +93,20 @@
 	        	var newX, newY;
 	        	
 	        	//  Considering the scale factor
-	        	newX = Math.floor(x / self.factorWidth) + 1;
-	            this.offsetX = self.factorWidth - ( x % self.factorWidth );
-	            newY = Math.floor(y / self.factorHeight) + 1;
-	            this.offsetY =  self.factorHeight - ( y % self.factorHeight );
+	        	newX = Math.floor(x / self.factorWidth);
+	        	newY = Math.floor(y / self.factorHeight);
+	        	
+	        	//  2 cases : if position is negative or positive
+	        	if (x >= 0) {
+		            this.offsetX = self.factorWidth - ( x % self.factorWidth );
+		        } else {
+			        this.offsetX = Math.abs(x) % self.factorWidth;
+		        }
+	            if (y >= 0) {
+		            this.offsetY =  self.factorHeight - ( y % self.factorHeight );
+		        } else {
+			        this.offsetY =  Math.abs(y) % self.factorHeight;
+		        }
 	            
 	            //  Considering the fact that my grid is limited
 	            //  If a number is out of grid, the goal is to give him an id in the other side of the grid as it was a pattern
@@ -111,8 +122,13 @@
 		        	this.tileY = newY;
 	        	}
 	        	
+	        	if (x != lastPositionX) {
+	        		console.log('position : ' + x + ' / offset : ' + this.offsetX + ' / tile : ' + newX + ' / polarite : ' + isEven(Math.floor(newX/250)) + ' / tile : ' + this.tileX + ' / x : ' + (this.tileX % 250) );
+	        		lastPositionX = x;
+	        	}
+	        	
 	        	//console.log(this.positionX + '  //  ' + this.positionY);
-	        	console.log(newX + ' -> ' + isEven(Math.floor(newX/250)) + ' -> ' + this.tileX + '  //  ' + newY + ' -> ' + isEven(Math.floor(newY/250)) + ' -> ' + this.tileY);
+	        	//console.log(newX + ' -> ' + isEven(Math.floor(newX/250)) + ' -> ' + this.tileX + '  //  ' + newY + ' -> ' + isEven(Math.floor(newY/250)) + ' -> ' + this.tileY);
 	        }
 	        
 	        //  Get the right offset considering the scale   ???
