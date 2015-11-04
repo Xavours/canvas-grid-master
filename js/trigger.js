@@ -26,7 +26,6 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 		var deltaX = 0;
 		var deltaY = 0;
 		var intervalCounter = 0;
-		var wheelDelta = 0;
 		
 	function OpenInNewTab(url) {
 		var win = window.open(url, '_blank');
@@ -57,29 +56,41 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 	});
 	
 	//  Bind mousewheel to scale
-	el.addEventListener('mousewheel', function(e) {
-		
-		if (wall.settings.scaleOn) {
-			if ( wall.scale >= wall.settings.minScale && wall.scale <= wall.settings.maxScale ) { 
-		    	
-		    	wall.scale += (e.wheelDelta/2000);
-	        
-		    	if (wall.scale < wall.settings.minScale) {
-		    		wall.scale = wall.settings.minScale;
-		    	} else if (wall.scale > wall.settings.maxScale) {
-		    		wall.scale = wall.settings.maxScale;
-		    	} else {
-			    	//  Correct position of view port to have the feeling that it zooms in the middle of the screen
-					wall.current.positionX += (e.wheelDelta/2000) * wall.width / 2;
-					wall.current.positionY += (e.wheelDelta/2000) * wall.height / 2;
-		    	}
+	//  Work around because of Firefox / IE / opera
+		function applyWheel(e){
+		    var evt = window.event || e 									//equalize event object
+		    var delta = evt.detail? evt.detail*(-120) : evt.wheelDelta 	//check for detail first so Opera uses that instead of wheelDelta
+		    
+		    //  Do !
+		    if (wall.settings.scaleOn) {
+				if ( wall.scale >= wall.settings.minScale && wall.scale <= wall.settings.maxScale ) { 
+			    	
+			    	wall.scale += (delta/2000);
+		        
+			    	if (wall.scale < wall.settings.minScale) {
+			    		wall.scale = wall.settings.minScale;
+			    	} else if (wall.scale > wall.settings.maxScale) {
+			    		wall.scale = wall.settings.maxScale;
+			    	} else {
+				    	//  Correct position of view port to have the feeling that it zooms in the middle of the screen
+						wall.current.positionX += (delta/2000) * wall.width / 2;
+						wall.current.positionY += (delta/2000) * wall.height / 2;
+			    	}
+				}
 			}
 		}
 		
-		wall.updateFPS();
-		    
-	}, false);
-	
+		//  FF doesn't recognize mousewheel as of FF3.x
+		var mousewheelevt=(/Firefox/i.test(navigator.userAgent))? "DOMMouseScroll" : "mousewheel" 
+		 
+		//  if IE (and Opera depending on user setting)
+		if (document.attachEvent)
+		    document.attachEvent("on"+mousewheelevt, applyWheel)
+		
+		//  WC3 browsers
+		else if (document.addEventListener)
+		    document.addEventListener(mousewheelevt, applyWheel, false);
+	    	
 	//  Bind click
 	eventHandler.on("tap", function(e) {
         
@@ -91,7 +102,7 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 	//  Bind hover
 	el.addEventListener('mousemove', function(e) {
         
-        var target = wall.getTile(e.event.pageX, e.event.pageY)
+        var target = wall.getTile(e.pageX, e.pageY)
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
         ctx.fillRect(e.pageX, e.pageY, 10, 10);
         
