@@ -20,7 +20,11 @@
 		};
  
 	if (!window.cancelAnimationFrame)
+<<<<<<< HEAD
 		window.cancelAnimationFrame = function(id) { 
+=======
+		window.cancelAnimationFrame = function(id) {
+>>>>>>> 9b6dbaeef6d2da673e20fb5461e0cdec20037b89
 			clearTimeout(id);
 		};
 }());
