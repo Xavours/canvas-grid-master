@@ -80,6 +80,23 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 		    
 	}, false);
 	
+	//  Bind click
+	eventHandler.on("tap", function(e) {
+        
+        var target = wall.getTile(e.center.x, e.center.y)
+        OpenInNewTab(target.imgSrc);
+        
+	});
+	
+	//  Bind hover
+	el.addEventListener('mousemove', function(e) {
+        
+        var target = wall.getTile(e.event.pageX, e.event.pageY)
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillRect(e.pageX, e.pageY, 10, 10);
+        
+	});
+	
 	
 //  Bind keys
 	$(document).keydown(function (e) {
