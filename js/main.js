@@ -20,7 +20,7 @@
 		};
  
 	if (!window.cancelAnimationFrame)
-		window.cancelAnimationFrame = function(id) {
+		window.cancelAnimationFrame = function(id) { 
 			clearTimeout(id);
 		};
 }());
@@ -155,20 +155,20 @@ if (x != lastPositionX) {
 	    }
 	    
 	    //  Events method
-	    this.getTileClicked = function (mouseX, mouseY) {
-		    if ( mouseX < this.current.offsetX ) {
-		        var x = 0;
+	    this.getTile = function (x, y) {
+		    if ( x < this.current.offsetX ) {
+		        var newX = 0;
 	        } else {
-		        var x = Math.floor(( mouseX - this.current.offsetX ) / this.factorWidth + 1);
+		        var newX = Math.floor(( x - this.current.offsetX ) / this.factorWidth + 1);
 	        }
-	        if ( mouseY < this.current.offsetY ) {
-		        var y = 0;
+	        if ( y < this.current.offsetY ) {
+		        var newY = 0;
 	        } else {
-		        var y = Math.floor(( mouseY - this.current.offsetY ) / this.factorHeight + 1);
+		        var newY = Math.floor(( y - this.current.offsetY ) / this.factorHeight + 1);
 	        }
 	        
-	        //console.log(x + ' / ' + y);
-	        return this.source[x, y]; 
+	        console.log( ((this.current.tileX + newX) % 250) + ' / ' + ((this.current.tileY + newY) % 250));
+	        return this.source[ (this.current.tileX + newX) % 250 ][ (this.current.tileY + newY) % 250 ]; 
 	    }
 	    
 	    //  Rendering methods
