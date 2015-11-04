@@ -152,6 +152,18 @@ function validOptions(param){
 				valid = false;
 			}
 		}
+		
+		
+		//  Spread mode
+		if ( param.hasOwnProperty('spreadMode') ) {
+			if( Object.toType(param.spreadMode) !== 'string'){
+				console.error('spreadMode is not a string');
+				valid = false;
+			} else if ( param.spreadMode !== 'random' && param.spreadMode !== 'shuffle') {
+				console.error('spreadMode : ' + param.spreadMode + ' is not a valid option');
+				valid = false;
+			}
+		}
 	
 	return valid;
 }

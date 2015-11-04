@@ -51,7 +51,8 @@
 		    scaleOn: true,
 		    scale: 1,
 		    minScale: 0.05,
-		    maxScale: 2
+		    maxScale: 2,
+		    spreadMode: 'random'
 	    }
 	    
 	    //  Get new settings
@@ -230,7 +231,8 @@ if (x != lastPositionX) {
 	        		
 	        		
 	        		//  Get the source of images
-	        		img = library[currentPoster.image.src];
+	        		var img = new Image();
+	        		img.src = currentPoster.imgSrc;
 	        		
 	        		//  Get the alpha
 	        		currentPoster.fade();
@@ -268,70 +270,86 @@ if (this.current.offsetX != lastOffsetX) {
 	}
 
 //  Class Poster
-	function Poster() {
-		var self = this;
-		this.color = {
-		    red: randomPick(1, 255),
-		    green: randomPick(1, 255),
-		    blue: randomPick(1, 255),
-		    alpha: 0
-		};
-		this.image = {
-		    src: randomPick(0, library.length)
-		};
-		this.width = 50;
-		this.height = 50;
-		this.inViewport = false;
-		this.blacked = true;
-		this.factor = 1;
-		this.time = 0;
-		this.rgba;
+var shuffleCounter = 0;
+
+function Poster() {
+	var self = this;
+	this.color = {
+	    red: randomPick(1, 255),
+	    green: randomPick(1, 255),
+	    blue: randomPick(1, 255),
+	    alpha: 0
+	};
+	
+	//  Apply Spread Mode
+	if (wall.settings.spreadMode == 'random') {
+	    this.imgSrc = library[randomPick(0, library.length)].src;
+	} else if (wall.settings.spreadMode == 'shuffle') {
+		if (shuffleCounter < library.length) {
+	    	this.imgSrc = library[shuffleCounter].src;
+	    	shuffleCounter++;
+	    } else {
+	    	shuffle(library);
+	    	shuffleCounter = 0;
+	    	this.imgSrc = library[shuffleCounter].src;
+	    	shuffleCounter++;
+	    }
+	 console.log(shuffleCounter);
+	};
+	
+	this.width = 50;
+	this.height = 50;
+	this.inViewport = false;
+	this.blacked = true;
+	this.factor = 1;
+	this.time = 0;
+	this.rgba;
+	
+	//  Determine what is the level of fade of the tile
+	this.fade = function () {
 		
-		//  Determine what is the level of fade of the tile
-		this.fade = function () {
+		//  If the poster is not in the viewport
+		if ( this.inViewport == false && this.blacked == true ) {
+			this.rgba = "rgba(0, 0, 0, 1)";
 			
-			//  If the poster is not in the viewport
-			if ( this.inViewport == false && this.blacked == true ) {
-				this.rgba = "rgba(0, 0, 0, 1)";
-				
-				//  Get a chance to get the poster unblacked
-				var chance = randomPick(1, 45 - this.factor);
-				if ( chance == 1 ) {
-					this.blacked = false;
-					this.factor = 1;
-				} else {
-					this.factor++;
-				}
-				
-				this.inViewport = true;
-			
-			//  If the poster is in the viewport but blacked
-			} else if ( this.inViewport == true && this.blacked == true ) {
-				
-				//  Get a chance to get the poster unblacked
-				var chance = randomPick(1, 45 - this.factor);
-				if ( chance == 1 ) {
-					this.blacked = false;
-					this.factor = 1;
-				} else {
-					this.factor++;
-				}
-			
-			//  If the poster is in the viewport and not blacked
-			} else if ( this.inViewport == true && this.blacked == false ){
-				if ( this.color.alpha < 1 ) {
-	        		this.color.alpha = easeOutCubic(this.time, 0, 1, 600);
-	        		this.time++;
-	    		}
-	    		this.rgba = "rgba(" + this.color.red + "," + this.color.green + "," + this.color.blue  + "," + this.color.alpha + ")";
-	    	
-	    	//  If other case throw error
+			//  Get a chance to get the poster unblacked
+			var chance = randomPick(1, 45 - this.factor);
+			if ( chance == 1 ) {
+				this.blacked = false;
+				this.factor = 1;
 			} else {
-				console.error( "FADE PROBLEM" );
+				this.factor++;
 			}
 			
+			this.inViewport = true;
+		
+		//  If the poster is in the viewport but blacked
+		} else if ( this.inViewport == true && this.blacked == true ) {
+			
+			//  Get a chance to get the poster unblacked
+			var chance = randomPick(1, 45 - this.factor);
+			if ( chance == 1 ) {
+				this.blacked = false;
+				this.factor = 1;
+			} else {
+				this.factor++;
+			}
+		
+		//  If the poster is in the viewport and not blacked
+		} else if ( this.inViewport == true && this.blacked == false ){
+			if ( this.color.alpha < 1 ) {
+        		this.color.alpha = easeOutCubic(this.time, 0, 1, 600);
+        		this.time++;
+    		}
+    		this.rgba = "rgba(" + this.color.red + "," + this.color.green + "," + this.color.blue  + "," + this.color.alpha + ")";
+    	
+    	//  If other case throw error
+		} else {
+			console.error( "FADE PROBLEM" );
 		}
+		
 	}
+}
 
 //  Generate array
 function generate(array) {
@@ -360,4 +378,10 @@ function text(indiceX, indiceY, x, y) {
 	ctx.font="18px Arial";
 	ctx.fillStyle = "black";
 	ctx.fillText(indiceX + ' / ' + indiceY, x, y);
+}
+
+// Shuffle
+function shuffle(o) {
+	for (var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+	return o;
 }
