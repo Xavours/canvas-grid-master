@@ -44,6 +44,8 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 	
 	eventHandler.on("panmove", function(e) {
         
+        wall.updateFPS();
+        
         deltaX = lastX - e.center.x;
         deltaY = lastY - e.center.y;
         //console.log('move');
@@ -59,11 +61,22 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 		
 		if (wall.settings.scaleOn) {
 			if ( wall.scale >= wall.settings.minScale && wall.scale <= wall.settings.maxScale ) { 
+		    	
 		    	wall.scale += (e.wheelDelta/2000);
-		    	if (wall.scale < wall.settings.minScale) wall.scale = wall.settings.minScale;
-		    	if (wall.scale > wall.settings.maxScale) wall.scale = wall.settings.maxScale;
+	        
+		    	if (wall.scale < wall.settings.minScale) {
+		    		wall.scale = wall.settings.minScale;
+		    	} else if (wall.scale > wall.settings.maxScale) {
+		    		wall.scale = wall.settings.maxScale;
+		    	} else {
+			    	//  Correct position of view port to have the feeling that it zooms in the middle of the screen
+					wall.current.positionX += (e.wheelDelta/2000) * wall.width / 2;
+					wall.current.positionY += (e.wheelDelta/2000) * wall.height / 2;
+		    	}
 			}
 		}
+		
+		wall.updateFPS();
 		    
 	}, false);
 	

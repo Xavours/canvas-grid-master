@@ -52,6 +52,7 @@
 		    scale: 1,
 		    minScale: 0.05,
 		    maxScale: 2,
+		    scaleSensitivity: 1,
 		    spreadMode: 'random'
 	    }
 	    
@@ -63,11 +64,22 @@
 	            this.numberCol = Math.ceil(this.height / this.factorHeight) + 1
 	        }
 	    
+	    //  Calculate FPS to change animation time according to FPS
+	    this.FPS = 60;
+	    this.updateFPS = function () {
+	        this.FPS = fps.getFPS();
+	    }
+	    
 	    //  Handle the change of scale
 	    this.scale = this.settings.scale;
 	    this.updateScale = function () {
 	        this.factorWidth = this.settings.tileWidth * this.scale;
 	        this.factorHeight = this.settings.tileHeight * this.scale;
+	        
+	        //  virtualWidth and virtualHeight represent the quantity of pixels that fits on the wall considering the scale.
+	        //  For example if the wall has a width of 100px and the scale is 1.5, this 100px represent 150px. It is stored in the current object.
+	        this.current.virtualWidth = this.width / this.scale;
+	        this.current.virtualHeight = this.height / this.scale;
 	    }
 	    
 	    //  Take care of the viewport = "what appears on the window"
@@ -84,8 +96,8 @@
 	    }
 	    
 	    this.current = {
-	        positionX: Math.floor(self.width / 2),
-	        positionY: Math.floor(self.height / 2),
+	        positionX: 0, //Math.floor(self.width / 2),
+	        positionY: 0, //Math.floor(self.height / 2),
 	        time: 0,
 	        
 	        //  Get the first tile on the upper left corner
@@ -294,7 +306,7 @@ function Poster() {
 	    	this.imgSrc = library[shuffleCounter].src;
 	    	shuffleCounter++;
 	    }
-	 console.log(shuffleCounter);
+	//console.log(shuffleCounter);
 	};
 	
 	this.width = 50;
@@ -338,7 +350,7 @@ function Poster() {
 		//  If the poster is in the viewport and not blacked
 		} else if ( this.inViewport == true && this.blacked == false ){
 			if ( this.color.alpha < 1 ) {
-        		this.color.alpha = easeOutCubic(this.time, 0, 1, 600);
+        		this.color.alpha = easeOutCubic(this.time, 0, 1, 500 );
         		this.time++;
     		}
     		this.rgba = "rgba(" + this.color.red + "," + this.color.green + "," + this.color.blue  + "," + this.color.alpha + ")";
@@ -385,3 +397,22 @@ function shuffle(o) {
 	for (var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
 	return o;
 }
+
+//  Calculate FPS
+var fps = {
+	startTime : 0,
+	frameNumber : 0,
+	getFPS : function(){
+		this.frameNumber++;
+		var d = new Date().getTime(),
+			currentTime = ( d - this.startTime ) / 1000,
+			result = Math.floor( ( this.frameNumber / currentTime ) );
+
+		if( currentTime > 1 ){
+			this.startTime = new Date().getTime();
+			this.frameNumber = 0;
+		}
+		return result;
+
+	}	
+};
