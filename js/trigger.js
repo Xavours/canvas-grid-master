@@ -47,10 +47,14 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
         
         deltaX = lastX - e.center.x;
         deltaY = lastY - e.center.y;
-        //console.log('move');
+        
+        //console.log('TRANSLATION :' + wall.current.positionX + '  //  ' + wall.current.positionY + '  //  ' + wall.width + '  //  ' + wall.height);
         
         wall.current.positionX += deltaX;
         wall.current.positionY += deltaY;
+        
+        console.log( 'TRANSLATION :' + wall.current.positionX + '  //  ' + wall.current.positionY );
+        
         lastX = e.center.x;
         lastY = e.center.y;
 	});
@@ -59,22 +63,32 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 	//  Work around because of Firefox / IE / opera
 		function applyWheel(e){
 		    var evt = window.event || e 									//equalize event object
-		    var delta = evt.detail? evt.detail*(-120) : evt.wheelDelta 	//check for detail first so Opera uses that instead of wheelDelta
+		    var delta = evt.detail? evt.detail*(-120) : evt.wheelDelta 		//check for detail first so Opera uses that instead of wheelDelta
 		    
 		    //  Do !
 		    if (wall.settings.scaleOn) {
 				if ( wall.scale >= wall.settings.minScale && wall.scale <= wall.settings.maxScale ) { 
 			    	
+			    	var lastScale = wall.scale;
 			    	wall.scale += (delta/2000);
+			    	var diffScale = wall.scale - lastScale;
 		        
 			    	if (wall.scale < wall.settings.minScale) {
 			    		wall.scale = wall.settings.minScale;
 			    	} else if (wall.scale > wall.settings.maxScale) {
 			    		wall.scale = wall.settings.maxScale;
 			    	} else {
-				    	//  Correct position of view port to have the feeling that it zooms in the middle of the screen
-						wall.current.positionX += (delta/2000) * wall.width / 2;
-						wall.current.positionY += (delta/2000) * wall.height / 2;
+			    	
+			    		//console.log('ZOOM :' + wall.current.positionX + '  //  ' + wall.current.positionY + '  //  ' + wall.width + '  //  ' + wall.height);
+			    		
+				    	//  Correct position of viewport to have the feeling that it zooms in the center of the screen
+						wall.current.positionX += diffScale * (wall.current.positionX + wall.width / 2);
+						wall.current.positionY += diffScale * (wall.current.positionY + wall.height / 2);
+						
+						console.log('ZOOM : positionX ' + wall.current.positionX + ' / correction : ' + (diffScale * (wall.current.positionX + wall.width / 2)) + ' / scale : ' + wall.scale);
+						//console.log( 'ZOOM :' + wall.current.positionX + '  //  ' + wall.current.positionY );
+						
+						
 			    	}
 				}
 			}
@@ -99,6 +113,7 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
         
 	});
 	
+	
 	//  Bind hover
 	el.addEventListener('mousemove', function(e) {
         
@@ -107,6 +122,66 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
         ctx.fillRect(e.pageX, e.pageY, 10, 10);
         
 	});
+	
+	
+	//  Bind pinch
+	/*
+var pinchSensitivity = 6 / 100000;
+	
+	eventHandler.on("pinchin", function(e) {
+        
+        if (wall.settings.scaleOn) {
+				if ( wall.scale >= wall.settings.minScale && wall.scale <= wall.settings.maxScale ) { 
+			    	
+			    	wall.scale -= ( e.scale * wall.factorWidth ) * pinchSensitivity;
+		        
+			    	if (wall.scale < wall.settings.minScale) {
+			    		wall.scale = wall.settings.minScale;
+			    	} else if (wall.scale > wall.settings.maxScale) {
+			    		wall.scale = wall.settings.maxScale;
+			    	} else {
+				    	//  Correct position of view port to have the feeling that it zooms in the middle of the screen
+						wall.current.positionX -= ( e.scale * wall.factorWidth ) * pinchSensitivity * wall.width / 2;
+						wall.current.positionY -= ( e.scale * wall.factorWidth ) * pinchSensitivity * wall.height / 2;
+			    	}
+				}
+			}
+        
+	});
+	
+	eventHandler.on("pinchout", function(e) {
+        
+        if (wall.settings.scaleOn) {
+				if ( wall.scale >= wall.settings.minScale && wall.scale <= wall.settings.maxScale ) { 
+			    	
+			    	wall.scale += ( e.scale * wall.factorWidth ) * pinchSensitivity;
+		        
+			    	if (wall.scale < wall.settings.minScale) {
+			    		wall.scale = wall.settings.minScale;
+			    	} else if (wall.scale > wall.settings.maxScale) {
+			    		wall.scale = wall.settings.maxScale;
+			    	} else {
+				    	//  Correct position of view port to have the feeling that it zooms in the middle of the screen
+						wall.current.positionX += ( e.scale * wall.factorWidth ) * pinchSensitivity * wall.width / 2;
+						wall.current.positionY += ( e.scale * wall.factorWidth ) * pinchSensitivity * wall.height / 2;
+			    	}
+				}
+			}
+        
+	});
+*/
+	
+	
+	//  Bind hover
+	/*
+el.addEventListener('mousemove', function(e) {
+        
+        var target = wall.getTile(e.pageX, e.pageY)
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillRect(e.pageX, e.pageY, 10, 10);
+        
+	});
+*/
 	
 	
 //  Bind keys
@@ -145,3 +220,21 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 	window.onresize = function(event) {
 	    wall.updateSizeViewport();
 	};
+	
+//  Debug
+	var myInterval = 0;
+	
+	function debug(sec){
+	
+		window.setInterval(function(){
+			zoom(0.05);
+			wall.current.positionX += 0.05 * (wall.current.positionX + wall.width / 2);
+			wall.current.positionY += 0.05 * (wall.current.positionY + wall.height / 2);
+			console.log('ZOOM : positionX ' + wall.current.positionX + ' / correction : ' + (0.05 * (wall.current.positionX + wall.width / 2)) + ' / scale : ' + wall.scale);
+		}, sec);
+		
+	}
+	
+	function zoom(delta) {
+		wall.scale += delta;
+	}

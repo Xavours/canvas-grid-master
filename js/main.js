@@ -167,7 +167,7 @@ if (x != lastPositionX) {
 		        var newY = Math.floor(( y - this.current.offsetY ) / this.factorHeight + 1);
 	        }
 	        
-	        console.log( ((this.current.tileX + newX) % 250) + ' / ' + ((this.current.tileY + newY) % 250));
+	        //console.log( ((this.current.tileX + newX) % 250) + ' / ' + ((this.current.tileY + newY) % 250));
 	        return this.source[ (this.current.tileX + newX) % 250 ][ (this.current.tileY + newY) % 250 ]; 
 	    }
 	    
