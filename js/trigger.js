@@ -85,7 +85,7 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 						wall.current.positionX += diffScale * (wall.current.positionX + wall.width / 2);
 						wall.current.positionY += diffScale * (wall.current.positionY + wall.height / 2);
 						
-						console.log('ZOOM : positionX ' + wall.current.positionX + ' / correction : ' + (diffScale * (wall.current.positionX + wall.width / 2)) + ' / scale : ' + wall.scale);
+						console.log('ZOOM : pX ' + wall.current.positionX + ' / diff : ' + diffScale + ' / corr : ' + (diffScale * (wall.current.positionX + wall.width / 2)) + ' / scale : ' + wall.scale);
 						//console.log( 'ZOOM :' + wall.current.positionX + '  //  ' + wall.current.positionY );
 						
 						
@@ -227,14 +227,30 @@ el.addEventListener('mousemove', function(e) {
 	function debug(sec){
 	
 		window.setInterval(function(){
-			zoom(0.05);
-			wall.current.positionX += 0.05 * (wall.current.positionX + wall.width / 2);
-			wall.current.positionY += 0.05 * (wall.current.positionY + wall.height / 2);
-			console.log('ZOOM : positionX ' + wall.current.positionX + ' / correction : ' + (0.05 * (wall.current.positionX + wall.width / 2)) + ' / scale : ' + wall.scale);
+			if ( wall.scale >= wall.settings.minScale && wall.scale <= wall.settings.maxScale ) { 
+			    	
+			    	var lastScale = wall.scale;
+			    	wall.scale += 0.05;
+			    	var diffScale = wall.scale - lastScale;
+		        
+			    	if (wall.scale < wall.settings.minScale) {
+			    		wall.scale = wall.settings.minScale;
+			    	} else if (wall.scale > wall.settings.maxScale) {
+			    		wall.scale = wall.settings.maxScale;
+			    	} else {
+			    	
+			    		//console.log('ZOOM :' + wall.current.positionX + '  //  ' + wall.current.positionY + '  //  ' + wall.width + '  //  ' + wall.height);
+			    		
+				    	//  Correct position of viewport to have the feeling that it zooms in the center of the screen
+						wall.current.positionX += diffScale * (wall.current.positionX + wall.width / 2);
+						wall.current.positionY += diffScale * (wall.current.positionY + wall.height / 2);
+						
+						console.log('ZOOM : pX ' + wall.current.positionX + ' / diff : ' + diffScale + ' / corr : ' + (diffScale * (wall.current.positionX + wall.width / 2)) + ' / scale : ' + wall.scale);
+						//console.log( 'ZOOM :' + wall.current.positionX + '  //  ' + wall.current.positionY );
+						
+						
+			    	}
+				}
 		}, sec);
 		
-	}
-	
-	function zoom(delta) {
-		wall.scale += delta;
 	}
