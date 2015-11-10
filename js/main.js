@@ -50,10 +50,12 @@
 		    fadeAnimation: 'easeOutCubic',
 		    scaleOn: true,
 		    scale: 1,
-		    minScale: 0.05,
-		    maxScale: 2,
+		    minScale: 0.25,
+		    maxScale: 1.75,
 		    scaleSensitivity: 1,
-		    spreadMode: 'random'
+		    spreadMode: 'random',
+		    startX: 0, //  TBD
+		    starY: 0 //  TBD
 	    }
 	    
 	    //  Get new settings
@@ -83,12 +85,6 @@
 	    }
 	    
 	    //  Take care of the viewport = "what appears on the window"
-	    this.viewport = {
-	        minX: 0,
-	        minY: 0,
-	        maxX: self.width,
-	        maxY: self.height
-	    }
 	    this.updateSizeViewport = function () {
 	    	this.width = canvas.width = window.innerWidth;
 			this.height = canvas.height = window.innerHeight;
@@ -96,9 +92,41 @@
 	    }
 	    
 	    this.current = {
-	        positionX: 0, //Math.floor(self.width / 2),
-	        positionY: 0, //Math.floor(self.height / 2),
+	        positionX: 0,
+	        positionY: 0,
+	        
+	        //  positionX, Y updates when translating and zooming the wall
+	        //  viewportX, Y updates only when translating. While zooming we use viewportX, Y
+	        viewportX: 0, //self.width / 2,
+	        viewportY: 0, //self.height / 2,
 	        time: 0,
+	        
+	        identifyTile: function (x, y) {
+	        
+	        	var newX, newY, finalX, finalY;
+	        	
+	        	//  Considering the scale factor
+	        	newX = Math.floor(x / self.factorWidth);
+	        	newY = Math.floor(y / self.factorHeight);
+	            
+	            //  Considering the fact that my grid is limited
+	            //  If a number is out of grid, the goal is to give him an id in the other side of the grid as it was a pattern
+	        	if ( newX < 0 || newX >= 250 ) {
+	        		( isEven( Math.floor( Math.abs(newX)/250) ) ) ? finalX = 250-Math.abs(newX) : finalX = Math.abs(newX)-250;
+	        	} else {
+		        	finalX = newX;
+	        	}
+	        	
+	        	if ( newY < 0 || newY >= 250 ) {
+	        		( isEven( Math.floor( Math.abs(newY)/250) ) ) ? finalY = 250-Math.abs(newY) : finalY = Math.abs(newY)-250;
+	        	} else {
+		        	finalY = newY;
+	        	}
+	        	
+	        	console.log( finalX + ' / ' + finalY );
+				//return this.source[ (this.current.tileX + newX) % 250 ][ (this.current.tileY + newY) % 250 ]; 
+	        	
+	        },
 	        
 	        //  Get the first tile on the upper left corner
 	        getTile: function (x, y) {
@@ -134,14 +162,6 @@
 	        	} else {
 		        	this.tileY = newY;
 	        	}
-	        	
-	        	//  Debug
-	        	/*
-if (x != lastPositionX) {
-	        		console.log('position : ' + x + ' / offset : ' + this.offsetX + ' / tile : ' + newX + ' / polarite : ' + isEven(Math.floor(newX/250)) + ' / tile : ' + this.tileX + ' / x : ' + (this.tileX % 250) );
-	        		lastPositionX = x;
-	        	}
-*/
 	        }
 	      	        
 	    }
@@ -154,7 +174,7 @@ if (x != lastPositionX) {
 			
 	    }
 	    
-	    //  Events method
+	    //  Events method to get TIle with coord (for example mouse)
 	    this.getTile = function (x, y) {
 		    if ( x < this.current.offsetX ) {
 		        var newX = 0;
@@ -167,8 +187,8 @@ if (x != lastPositionX) {
 		        var newY = Math.floor(( y - this.current.offsetY ) / this.factorHeight + 1);
 	        }
 	        
-	        //console.log( ((this.current.tileX + newX) % 250) + ' / ' + ((this.current.tileY + newY) % 250));
-	        return this.source[ (this.current.tileX + newX) % 250 ][ (this.current.tileY + newY) % 250 ]; 
+	        console.log( ((this.current.tileX + newX) % 250) + ' / ' + ((this.current.tileY + newY) % 250));
+	        //return this.source[ (this.current.tileX + newX) % 250 ][ (this.current.tileY + newY) % 250 ]; 
 	    }
 	    
 	    //  Rendering methods
@@ -315,6 +335,7 @@ function Poster() {
 	this.blacked = true;
 	this.factor = 1;
 	this.time = 0;
+	this.alphaEnd = 1;			//  If the poster is being hovered, alphaEnd = 0.5;
 	this.rgba;
 	
 	//  Determine what is the level of fade of the tile

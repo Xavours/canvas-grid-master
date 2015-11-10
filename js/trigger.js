@@ -21,11 +21,13 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 
 //  Bind Mouse control
 
-	//  Mouse controller
+	//  Initialize variable
 		var lastX, lastY;
 		var deltaX = 0;
 		var deltaY = 0;
 		var intervalCounter = 0;
+		var startWheel, lastWheel, diffWheel;
+		startWheel = lastWheel = new Date();
 		
 	function OpenInNewTab(url) {
 		var win = window.open(url, '_blank');
@@ -37,26 +39,32 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
         
         lastX = e.center.x;
         lastY = e.center.y;
-        //console.log(lastX + ' // ' + lastY);
     
     });
 	
 	eventHandler.on("panmove", function(e) {
         
-        wall.updateFPS();
-        
         deltaX = lastX - e.center.x;
         deltaY = lastY - e.center.y;
         
-        //console.log('TRANSLATION :' + wall.current.positionX + '  //  ' + wall.current.positionY + '  //  ' + wall.width + '  //  ' + wall.height);
-        
+        //  Update PositionX, Y
         wall.current.positionX += deltaX;
         wall.current.positionY += deltaY;
         
-        console.log( 'TRANSLATION :' + wall.current.positionX + '  //  ' + wall.current.positionY );
+        //  Update ViewportX, Y
+        wall.current.viewportX += deltaX / wall.scale;
+		wall.current.viewportY += deltaY / wall.scale;    
         
         lastX = e.center.x;
         lastY = e.center.y;
+        
+	});
+	
+	eventHandler.on("panend", function(e) {
+        
+        //  When you finish paning, update viewportX, Y
+        //  Wait 0.5 sec to update it though cause the movement might not be finished when you stop paning                 
+        
 	});
 	
 	//  Bind mousewheel to scale
@@ -65,8 +73,14 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 		    var evt = window.event || e 									//equalize event object
 		    var delta = evt.detail? evt.detail*(-120) : evt.wheelDelta 		//check for detail first so Opera uses that instead of wheelDelta
 		    
-		    //  Do !
+		    // Zoom if the option scaleOn is true
 		    if (wall.settings.scaleOn) {
+		    
+		    	//  If you start wheeling the mouse stock for the first time since 3 seconds, update viewportX, Y
+		    	startWheel = new Date();
+		    	diffWheel = (startWheel- lastWheel) / 1000;
+		    			    
+				//Update Scale
 				if ( wall.scale >= wall.settings.minScale && wall.scale <= wall.settings.maxScale ) { 
 			    	
 			    	var lastScale = wall.scale;
@@ -78,17 +92,21 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 			    	} else if (wall.scale > wall.settings.maxScale) {
 			    		wall.scale = wall.settings.maxScale;
 			    	} else {
-			    	
-			    		//console.log('ZOOM :' + wall.current.positionX + '  //  ' + wall.current.positionY + '  //  ' + wall.width + '  //  ' + wall.height);
-			    		
+			    			    		
 				    	//  Correct position of viewport to have the feeling that it zooms in the center of the screen
-						wall.current.positionX += diffScale * (wall.current.positionX + wall.width / 2);
-						wall.current.positionY += diffScale * (wall.current.positionY + wall.height / 2);
+				    		
+				    		//  Warning : diffScale can be bigger than (maxScale - lastScale) or (lastScale - minScale)
+				    		if ( diffScale > (wall.settings.maxScale - lastScale) ) diffscale = wall.settings.maxScale - lastScale;
+				    		if ( diffScale > (lastScale - wall.settings.minScale) ) diffscale = lastScale - wall.settings.minScale;
+				    		
+						var correctionX = diffScale * (wall.current.viewportX + wall.width / 2);
+						var correctionY = diffScale * (wall.current.viewportY + wall.height / 2);
 						
-						console.log('ZOOM : pX ' + wall.current.positionX + ' / diff : ' + diffScale + ' / corr : ' + (diffScale * (wall.current.positionX + wall.width / 2)) + ' / scale : ' + wall.scale);
-						//console.log( 'ZOOM :' + wall.current.positionX + '  //  ' + wall.current.positionY );
+						wall.current.positionX += correctionX;
+						wall.current.positionY += correctionY;
 						
-						
+						//wall.current.identifyTile(wall.current.viewportX, wall.current.viewportY);
+						console.log(wall.scale + '  /  ' + correctionX + '  /  ' + correctionY);
 			    	}
 				}
 			}
@@ -98,12 +116,14 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 		var mousewheelevt=(/Firefox/i.test(navigator.userAgent))? "DOMMouseScroll" : "mousewheel" 
 		 
 		//  if IE (and Opera depending on user setting)
-		if (document.attachEvent)
-		    document.attachEvent("on"+mousewheelevt, applyWheel)
-		
-		//  WC3 browsers
-		else if (document.addEventListener)
-		    document.addEventListener(mousewheelevt, applyWheel, false);
+		el.addEventListener('mouseover', function() {
+			if (document.attachEvent)
+			    document.attachEvent("on"+mousewheelevt, applyWheel)
+			
+			//  WC3 browsers
+			else if (document.addEventListener)
+			    document.addEventListener(mousewheelevt, applyWheel, false);
+		});
 	    	
 	//  Bind click
 	eventHandler.on("tap", function(e) {
@@ -117,16 +137,14 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 	//  Bind hover
 	el.addEventListener('mousemove', function(e) {
         
-        var target = wall.getTile(e.pageX, e.pageY)
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-        ctx.fillRect(e.pageX, e.pageY, 10, 10);
+        var target = wall.getTile(e.pageX, e.pageY);
+        //console.log(target);
         
 	});
 	
 	
 	//  Bind pinch
-	/*
-var pinchSensitivity = 6 / 100000;
+	var pinchSensitivity = 6 / 100000;
 	
 	eventHandler.on("pinchin", function(e) {
         
@@ -169,7 +187,6 @@ var pinchSensitivity = 6 / 100000;
 			}
         
 	});
-*/
 	
 	
 	//  Bind hover
