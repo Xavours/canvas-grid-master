@@ -259,7 +259,6 @@
 	        		var x = (this.current.tileX+i) % 250;
 	        		var y = (this.current.tileY+j) % 250;
 	        		var currentPoster = this.source[x][y];
-	        		//console.log('donc : ' + x + '  //  ' + y);
 	        		
 	        		
 	        		//  Get the source of images
@@ -371,7 +370,17 @@ function Poster() {
 		//  If the poster is in the viewport and not blacked
 		} else if ( this.inViewport == true && this.blacked == false ){
 			if ( this.color.alpha < 1 ) {
-        		this.color.alpha = easeOutCubic(this.time, 0, 1, 500 );
+				
+				/*
+//  Adapt lenght of fading image to the number of images displayed to counter the drop of FPS
+				if ( wall.scale >= 1) {
+					var animationTime = 250;
+				} else {
+					var animationTime = 250*wall.scale;
+				}
+*/
+				
+        		this.color.alpha = easeOutCubic(this.time, 0, this.alphaEnd, 200 );
         		this.time++;
     		}
     		this.rgba = "rgba(" + this.color.red + "," + this.color.green + "," + this.color.blue  + "," + this.color.alpha + ")";
