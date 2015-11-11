@@ -128,8 +128,9 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 	//  Bind click
 	eventHandler.on("tap", function(e) {
         
-        var target = wall.getTile(e.center.x, e.center.y)
-        OpenInNewTab(target.imgSrc);
+        var target = wall.current.identifyTile(e.center.x, e.center.y)
+        //console.log('alpha : ' + target.color.alpha + '  /  alphaEnd : ' + target.alphaEnd);
+        wall.onClick(target);
         
 	});
 	
@@ -138,7 +139,7 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 	el.addEventListener('mousemove', function(e) {
         
         var target = wall.getTile(e.pageX, e.pageY);
-        //console.log(target);
+        wall.onMouseover(target);
         
 	});
 	
@@ -186,20 +187,7 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 				}
 			}
         
-	});
-	
-	
-	//  Bind hover
-	/*
-el.addEventListener('mousemove', function(e) {
-        
-        var target = wall.getTile(e.pageX, e.pageY)
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-        ctx.fillRect(e.pageX, e.pageY, 10, 10);
-        
-	});
-*/
-	
+	});	
 	
 //  Bind keys
 	$(document).keydown(function (e) {

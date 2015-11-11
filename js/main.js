@@ -25,10 +25,9 @@
 		};
 }());
 
-//  Variable
-
 //  Class Wall
 	var canvas, ctx;
+	var lastTileHovered = {};
 	
 	//  Debug
 	var lastOffsetX = 1;
@@ -123,8 +122,8 @@
 		        	finalY = newY;
 	        	}
 	        	
-	        	console.log( finalX + ' / ' + finalY );
-				//return this.source[ (this.current.tileX + newX) % 250 ][ (this.current.tileY + newY) % 250 ]; 
+	        	//console.log( finalX + ' / ' + finalY );
+				return this.source[ (this.current.tileX + newX) % 250 ][ (this.current.tileY + newY) % 250 ]; 
 	        	
 	        },
 	        
@@ -166,15 +165,26 @@
 	      	        
 	    }
 	    
-	    //  Create the element "wall"
+	    //  Create or destroy the element "wall"
 	    this.create = function () {
 		    $('#' + idParent).html('<canvas id="' + self.id + '" width="' + self.width + '" height="' + self.height + '">');
 		    canvas = document.getElementById( self.id )
 			ctx = canvas.getContext("2d");
-			
+	    }
+	    this.destroy = function () {
+	        $('#' + idParent).html('');	        
 	    }
 	    
-	    //  Events method to get TIle with coord (for example mouse)
+	    //  Play / Pause
+	    var isPaused = false;
+	    this.pause = function () {
+	        isPaused = true;	        
+	    }
+	    this.play = function () {
+	        isPaused = false;	        
+	    }
+	    
+	    //  Events method to get Tile with coord (for example mouse)
 	    this.getTile = function (x, y) {
 		    if ( x < this.current.offsetX ) {
 		        var newX = 0;
@@ -187,8 +197,58 @@
 		        var newY = Math.floor(( y - this.current.offsetY ) / this.factorHeight + 1);
 	        }
 	        
-	        console.log( ((this.current.tileX + newX) % 250) + ' / ' + ((this.current.tileY + newY) % 250));
-	        //return this.source[ (this.current.tileX + newX) % 250 ][ (this.current.tileY + newY) % 250 ]; 
+	        //console.log( ((this.current.tileX + newX) % 250) + ' / ' + ((this.current.tileY + newY) % 250));
+	        return this.source[ (this.current.tileX + newX) % 250 ][ (this.current.tileY + newY) % 250 ]; 
+	    }
+	    
+	    this.onClick = function (tile) {
+		    console.log('click');
+		    
+		    openFocus(tile.index);
+	    }
+	    
+	    this.onMouseover = function (tile) {
+	    	
+	    	if ( typeof lastTileHovered.color == 'undefined' ) {
+			    
+			    tile.color.alpha = 0.5;
+			    tile.alphaEnd = 0.5;
+			    tile.time = 200;
+			    
+			    tile.hovered = true;
+			    lastTileHovered = tile;
+			    
+		    } else if ( tile.hovered !== lastTileHovered.hovered ) {
+		    
+			    lastTileHovered.color.alpha = 1;
+			    lastTileHovered.alphaEnd = 1;
+			    lastTileHovered.time = 200;
+			    
+			    tile.color.alpha = 0.5;
+			    tile.alphaEnd = 0.5;
+			    tile.time = 200;
+			    
+			    lastTileHovered.hovered = false;
+			    tile.hovered = true;
+			    lastTileHovered = tile;
+			    
+		    }		    
+	    }
+	    
+	    this.getTile = function (x, y) {
+		    if ( x < this.current.offsetX ) {
+		        var newX = 0;
+	        } else {
+		        var newX = Math.floor(( x - this.current.offsetX ) / this.factorWidth + 1);
+	        }
+	        if ( y < this.current.offsetY ) {
+		        var newY = 0;
+	        } else {
+		        var newY = Math.floor(( y - this.current.offsetY ) / this.factorHeight + 1);
+	        }
+	        
+	        //console.log( ((this.current.tileX + newX) % 250) + ' / ' + ((this.current.tileY + newY) % 250));
+	        return this.source[ (this.current.tileX + newX) % 250 ][ (this.current.tileY + newY) % 250 ]; 
 	    }
 	    
 	    //  Rendering methods
@@ -202,9 +262,11 @@
 	        //  Clear canvas
 	        ctx.clearRect(0, 0, self.width, self.height);
 	        
-	        //  Chosse rendering mode
-	        if (this.settings.content == 'image') this.drawImages();
-	        if (this.settings.content == 'rectangle') this.drawRectangles();
+	        if ( !isPaused) {
+		        //  Chosse rendering mode
+		        if (this.settings.content == 'image') this.drawImages();
+		        if (this.settings.content == 'rectangle') this.drawRectangles();
+	        }
 	        
 	    }
 	    
@@ -258,11 +320,15 @@
 	        	
 	        		var x = (this.current.tileX+i) % 250;
 	        		var y = (this.current.tileY+j) % 250;
+	        		
+	        		//console.log(this.source);
 	        		var currentPoster = this.source[x][y];
 	        		
 	        		
 	        		//  Get the source of images
 	        		var img = new Image();
+	        		
+	        		//console.log(currentPoster.imgSrc);
 	        		img.src = currentPoster.imgSrc;
 	        		
 	        		//  Get the alpha
@@ -318,11 +384,17 @@ function Poster() {
 	} else if (wall.settings.spreadMode == 'shuffle') {
 		if (shuffleCounter < library.length) {
 	    	this.imgSrc = library[shuffleCounter].src;
+	    	
+	    	//  Custom for flyposter.ca
+	    	this.index = library[shuffleCounter].id;
 	    	shuffleCounter++;
 	    } else {
 	    	shuffle(library);
 	    	shuffleCounter = 0;
 	    	this.imgSrc = library[shuffleCounter].src;
+	    	
+	    	//  Custom for flyposter.ca
+	    	this.index = library[shuffleCounter].id;
 	    	shuffleCounter++;
 	    }
 	//console.log(shuffleCounter);
@@ -336,6 +408,7 @@ function Poster() {
 	this.time = 0;
 	this.alphaEnd = 1;			//  If the poster is being hovered, alphaEnd = 0.5;
 	this.rgba;
+	this.hovered = false;
 	
 	//  Determine what is the level of fade of the tile
 	this.fade = function () {
@@ -415,7 +488,7 @@ function isEven(n) {
   return n == parseFloat(n) && !(n % 2);
 }
 
-//  Text
+//  Text for debugging
 function text(indiceX, indiceY, x, y) {
 	ctx.font="18px Arial";
 	ctx.fillStyle = "black";

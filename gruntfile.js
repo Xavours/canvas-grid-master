@@ -29,7 +29,7 @@ module.exports = function(grunt) {
         tasks: ['uglify','less'],
         options: {
           spawn: false,
-          livereload: true,
+          livereload: 8888,
         },
       },
     },
@@ -40,7 +40,7 @@ module.exports = function(grunt) {
       },
       my_target: {
         files: {
-	  'min/app.min.js': ['js/main.js',
+	  'min/canvas-grid-master.min.js': ['js/main.js',
 	  					 'js/options.js',
 	  					 'js/trigger.js',
 	  					 'js/easing.js'],
