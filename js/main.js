@@ -25,10 +25,9 @@
 		};
 }());
 
-//  Variable
-
 //  Class Wall
 	var canvas, ctx;
+	var lastTileHovered = {};
 	
 	//  Debug
 	var lastOffsetX = 1;
@@ -55,7 +54,8 @@
 		    scaleSensitivity: 1,
 		    spreadMode: 'random',
 		    startX: 0, //  TBD
-		    starY: 0 //  TBD
+		    starY: 0, //  TBD
+			onClickCallback: defaultClickCallback
 	    }
 	    
 	    //  Get new settings
@@ -130,7 +130,9 @@
 	        	}
 	        	
 	        	//console.log( finalX + ' / ' + finalY );
+
 				//return this.source[ (this.current.tileX + newX) % 250 ][ (this.current.tileY + newY) % 250 ]; 
+
 	        	
 	        },
 	        
@@ -172,14 +174,14 @@
 	      	        
 	    }
 	    
-	    //  Create the element "wall"
+	    //  Create or destroy the element "wall"
 	    this.create = function () {
 		    $('#' + idParent).html('<canvas id="' + self.id + '" width="' + self.width + '" height="' + self.height + '">');
 		    canvas = document.getElementById( self.id );
 			ctx = canvas.getContext("2d");
 	    }
 	    
-	    //  Events method to get TIle with coord (for example mouse)
+	    //  Events method to get Tile with coord (for example mouse)
 	    this.getTile = function (x, y) {
 			var tempX = x - this.current.offsetX,
 				tempY = y - this.current.offsetY,
@@ -192,9 +194,40 @@
 	        if (tempY >= 0) {
 		        newY = Math.floor( tempY / this.factorWidth + 1 );
 	        }
-	        
-	        //console.log( ((this.current.tileX + newX) % 250) + ' / ' + ((this.current.tileY + newY) % 250));
-	        //return this.source[ (this.current.tileX + newX) % 250 ][ (this.current.tileY + newY) % 250 ]; 
+			
+			return this.source[ (this.current.tileX + newX) % 250 ][ (this.current.tileY + newY) % 250 ]; 
+	    }
+
+	    this.onClick = function () {	    
+		    this.settings.onClickCallback();
+	    }
+	    
+	    this.onMouseover = function (tile) {
+	    	
+	    	if ( typeof lastTileHovered.color == 'undefined' ) {
+			    
+			    tile.color.alpha = 0.5;
+			    tile.alphaEnd = 0.5;
+			    tile.time = 200;
+			    
+			    tile.hovered = true;
+			    lastTileHovered = tile;
+			    
+		    } else if ( tile.hovered !== lastTileHovered.hovered ) {
+		    
+			    lastTileHovered.color.alpha = 1;
+			    lastTileHovered.alphaEnd = 1;
+			    lastTileHovered.time = 200;
+			    
+			    tile.color.alpha = 0.5;
+			    tile.alphaEnd = 0.5;
+			    tile.time = 200;
+			    
+			    lastTileHovered.hovered = false;
+			    tile.hovered = true;
+			    lastTileHovered = tile;
+			    
+		    }		    
 	    }
 	    
 	    //  Rendering methods
@@ -268,11 +301,15 @@
 	        	
 	        		var x = (this.current.tileX+i) % 250;
 	        		var y = (this.current.tileY+j) % 250;
+	        		
+	        		//console.log(this.source);
 	        		var currentPoster = this.source[x][y];
 	        		
 	        		
 	        		//  Get the source of images
 	        		var img = new Image();
+	        		
+	        		//console.log(currentPoster.imgSrc);
 	        		img.src = currentPoster.imgSrc;
 	        		
 	        		//  Get the alpha
@@ -384,6 +421,7 @@ function Poster() {
 	this.time = 0;
 	this.alphaEnd = 1;			//  If the poster is being hovered, alphaEnd = 0.5;
 	this.rgba;
+	this.hovered = false;
 	
 	//  Determine what is the level of fade of the tile
 	this.fade = function () {
@@ -463,7 +501,7 @@ function isEven(n) {
   return n == parseFloat(n) && !(n % 2);
 }
 
-//  Text
+//  Text for debugging
 function text(indiceX, indiceY, x, y) {
 	ctx.font="18px Arial";
 	ctx.fillStyle = "black";
@@ -492,5 +530,9 @@ var fps = {
 		}
 		return result;
 
-	}	
+	}
 };
+
+function defaultClickCallback(){
+	console.log('click');
+}
