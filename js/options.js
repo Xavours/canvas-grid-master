@@ -164,6 +164,13 @@ function validOptions(param){
 				valid = false;
 			}
 		}
+		
+		if ( param.hasOwnProperty('onClickCallback') ) {
+			if( Object.toType(param.onClickCallback) !== 'function'){
+				console.error('onClickCallback is not a function');
+				valid = false;
+			}
+		}
 	
 	return valid;
 }

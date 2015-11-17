@@ -54,7 +54,8 @@
 		    scaleSensitivity: 1,
 		    spreadMode: 'random',
 		    startX: 0, //  TBD
-		    starY: 0 //  TBD
+		    starY: 0, //  TBD
+			onClickCallback: defaultClickCallback
 	    }
 	    
 	    //  Get new settings
@@ -89,6 +90,14 @@
 			this.height = canvas.height = window.innerHeight;
 			
 	    }
+		
+		this.newX = function(x){
+				return Math.floor(x / self.factorWidth);
+		}
+		
+		this.newY = function(y){
+				return Math.floor(y / self.factorHeight);
+		}
 	    
 	    this.current = {
 	        positionX: 0,
@@ -99,42 +108,40 @@
 	        viewportX: 0, //self.width / 2,
 	        viewportY: 0, //self.height / 2,
 	        time: 0,
-	        
+			
 	        identifyTile: function (x, y) {
-	        
-	        	var newX, newY, finalX, finalY;
-	        	
+				
 	        	//  Considering the scale factor
-	        	newX = Math.floor(x / self.factorWidth);
-	        	newY = Math.floor(y / self.factorHeight);
+	        	var newX = self.newX(x), 
+					newY = self.newY(y), 
+					finalX = newX, 
+					finalY = newY;
 	            
 	            //  Considering the fact that my grid is limited
 	            //  If a number is out of grid, the goal is to give him an id in the other side of the grid as it was a pattern
 	        	if ( newX < 0 || newX >= 250 ) {
-	        		( isEven( Math.floor( Math.abs(newX)/250) ) ) ? finalX = 250-Math.abs(newX) : finalX = Math.abs(newX)-250;
-	        	} else {
-		        	finalX = newX;
+					var absX = Math.abs(newX);
+	        		finalX = ( isEven( Math.floor( absX/250) ) ) ? 250-absX : absX-250;
 	        	}
 	        	
 	        	if ( newY < 0 || newY >= 250 ) {
-	        		( isEven( Math.floor( Math.abs(newY)/250) ) ) ? finalY = 250-Math.abs(newY) : finalY = Math.abs(newY)-250;
-	        	} else {
-		        	finalY = newY;
+					var absY = Math.abs(newY);
+	        		finalY = ( isEven( Math.floor( absY/250) ) ) ? 250-absY : absY-250;
 	        	}
 	        	
 	        	//console.log( finalX + ' / ' + finalY );
-				return this.source[ (this.current.tileX + newX) % 250 ][ (this.current.tileY + newY) % 250 ]; 
+
+				//return this.source[ (this.current.tileX + newX) % 250 ][ (this.current.tileY + newY) % 250 ]; 
+
 	        	
 	        },
 	        
 	        //  Get the first tile on the upper left corner
 	        getTile: function (x, y) {
-	        
-	        	var newX, newY;
 	        	
 	        	//  Considering the scale factor
-	        	newX = Math.floor(x / self.factorWidth);
-	        	newY = Math.floor(y / self.factorHeight);
+	        	var newX = self.newX(x), 
+					newY = self.newY(y);
 	        	
 	        	//  2 cases : if position is negative or positive
 	        	if (x >= 0) {
@@ -151,13 +158,15 @@
 	            //  Considering the fact that my grid is limited
 	            //  If a number is out of grid, the goal is to give him an id in the other side of the grid as it was a pattern
 	        	if ( newX < 0 || newX >= 250 ) {
-	        		( isEven( Math.floor( Math.abs(newX)/250) ) ) ? this.tileX = 250-Math.abs(newX) : this.tileX = Math.abs(newX)-250;
+					var absX = Math.abs(newX);
+	        		this.tileX = ( isEven( Math.floor( absX/250) ) ) ? 250-absX : absX-250;
 	        	} else {
 		        	this.tileX = newX;
 	        	}
 	        	
 	        	if ( newY < 0 || newY >= 250 ) {
-	        		( isEven( Math.floor( Math.abs(newY)/250) ) ) ? this.tileY = 250-Math.abs(newY) : this.tileY = Math.abs(newY)-250;
+					var absY = Math.abs(newY);
+	        		this.tileY = ( isEven( Math.floor( absY/250) ) ) ? 250-absY : absY-250;
 	        	} else {
 		        	this.tileY = newY;
 	        	}
@@ -168,45 +177,29 @@
 	    //  Create or destroy the element "wall"
 	    this.create = function () {
 		    $('#' + idParent).html('<canvas id="' + self.id + '" width="' + self.width + '" height="' + self.height + '">');
-		    canvas = document.getElementById( self.id )
+		    canvas = document.getElementById( self.id );
 			ctx = canvas.getContext("2d");
-	    }
-	    this.destroy = function () {
-	        $('#' + idParent).html('');	        
-	    }
-	    
-	    //  Play / Pause
-	    var isPaused = false;
-	    this.pause = function () {
-	        isPaused = true;	        
-	    }
-	    this.play = function () {
-	        isPaused = false;	        
 	    }
 	    
 	    //  Events method to get Tile with coord (for example mouse)
 	    this.getTile = function (x, y) {
-		    if ( x < this.current.offsetX ) {
-		        var newX = 0;
-	        } else {
-		        var newX = Math.floor(( x - this.current.offsetX ) / this.factorWidth + 1);
+			var tempX = x - this.current.offsetX,
+				tempY = y - this.current.offsetY,
+				newX = 0,
+				newY = 0;
+			
+		    if (tempX >= 0) {
+		        newX = Math.floor( tempX / this.factorWidth + 1 );
 	        }
-	        if ( y < this.current.offsetY ) {
-		        var newY = 0;
-	        } else {
-		        var newY = Math.floor(( y - this.current.offsetY ) / this.factorHeight + 1);
+	        if (tempY >= 0) {
+		        newY = Math.floor( tempY / this.factorWidth + 1 );
 	        }
-	        
-	        //console.log( ((this.current.tileX + newX) % 250) + ' / ' + ((this.current.tileY + newY) % 250));
-	        return this.source[ (this.current.tileX + newX) % 250 ][ (this.current.tileY + newY) % 250 ]; 
+			
+			return this.source[ (this.current.tileX + newX) % 250 ][ (this.current.tileY + newY) % 250 ]; 
 	    }
-	    
-	    this.onClick = function (tile) {
-		    console.log('click');
-		    OpenInNewTab(tile.imgSrc);
-		    
-		    //  Custom for flyposter.ca
-		    openFocus(tile.index);
+
+	    this.onClick = function () {	    
+		    this.settings.onClickCallback();
 	    }
 	    
 	    this.onMouseover = function (tile) {
@@ -241,22 +234,6 @@
 		    }		    
 	    }
 	    
-	    this.getTile = function (x, y) {
-		    if ( x < this.current.offsetX ) {
-		        var newX = 0;
-	        } else {
-		        var newX = Math.floor(( x - this.current.offsetX ) / this.factorWidth + 1);
-	        }
-	        if ( y < this.current.offsetY ) {
-		        var newY = 0;
-	        } else {
-		        var newY = Math.floor(( y - this.current.offsetY ) / this.factorHeight + 1);
-	        }
-	        
-	        //console.log( ((this.current.tileX + newX) % 250) + ' / ' + ((this.current.tileY + newY) % 250));
-	        return this.source[ (this.current.tileX + newX) % 250 ][ (this.current.tileY + newY) % 250 ]; 
-	    }
-	    
 	    //  Rendering methods
 	    this.render = function () {
 	    
@@ -268,51 +245,53 @@
 	        //  Clear canvas
 	        ctx.clearRect(0, 0, self.width, self.height);
 	        
-	        if ( !isPaused) {
-		        //  Chosse rendering mode
-		        if (this.settings.content == 'image') this.drawImages();
-		        if (this.settings.content == 'rectangle') this.drawRectangles();
-	        }
+	        //  Chosse rendering mode
+	        if (this.settings.content == 'image') this.drawImages();
+	        else if (this.settings.content == 'rectangle') this.drawRectangles();
 	        
 	    }
 	    
 	    this.drawRectangles = function () {
-	    	for (var i = 0; i <self.numberRow; i++) {
-	        	for (var j = 0; j <self.numberCol; j++) {
+	    	for (var i = 0; i < self.numberRow; i++) {
+	        	for (var j = 0; j < self.numberCol; j++) {
 	        		
 	        		var x = (this.current.tileX+i) % 250;
 	        		var y = (this.current.tileY+j) % 250;
 	        		var currentPoster = this.source[x][y];
-	        		
 	        		//  Get the color of the rectangle
 	        		currentPoster.fade();
 			        ctx.fillStyle = currentPoster.rgba;
-			        
-			        if ( i <1) {
+					
+					// Optimisations
+					var jTimesOffY = j*this.current.offsetY;
+					var factorOffsetLoopX = self.factorOffsetLoopX(i);
+					var factorOffsetLoopY = self.factorOffsetLoopY(j);
+					
+					
+ 					if ( i <1) {
+						var iTimeOffX = i*this.current.offsetX;
 				        
-				        if ( j <1) {
-				        					        	
-					        ctx.fillRect(i*this.current.offsetX, j*this.current.offsetY, this.current.offsetX, this.current.offsetY);
+				        if ( j <1) {		        	
+					        ctx.fillRect(iTimeOffX, jTimesOffY, this.current.offsetX, this.current.offsetY);
 					        
 					        text(x, y, 20, 20);
 					        
 				        } else {
-				        	
-				        	ctx.fillRect(i*this.current.offsetX, this.current.offsetY + (j-1)*this.factorHeight, this.current.offsetX, this.factorHeight);
+				        	ctx.fillRect(iTimeOffX, factorOffsetLoopY, this.current.offsetX, this.factorHeight);
 					        
-					        text(x, y, i*this.current.offsetX +20, this.current.offsetY + (j-1)*this.factorHeight + 20);
+					        text(x, y, iTimeOffX + 20, factorOffsetLoopY + 20);
 						}
 						
 					} else {
 						
 						if ( j <1) {
-					        ctx.fillRect(this.current.offsetX + (i-1)*this.factorWidth, j*this.current.offsetY, this.factorWidth, this.current.offsetY);
+					        ctx.fillRect(factorOffsetLoopX, jTimesOffY, this.factorWidth, this.current.offsetY);
 					        
-					        text(x, y, this.current.offsetX + (i-1)*this.factorWidth + 20, j*this.current.offsetY + 20);
+					        text(x, y, factorOffsetLoopX + 20, jTimesOffY + 20);
 				        } else {
-					        ctx.fillRect(this.current.offsetX + (i-1)*this.factorWidth, this.current.offsetY + (j-1)*this.factorHeight, this.factorWidth, this.factorHeight);
+					        ctx.fillRect(factorOffsetLoopX, factorOffsetLoopY, this.factorWidth, this.factorHeight);
 					        
-					        text(x, y, this.current.offsetX + (i-1)*this.factorWidth + 20, this.current.offsetY + (j-1)*this.factorHeight + 20);
+					        text(x, y, factorOffsetLoopX + 20, factorOffsetLoopY + 20);
 						}					
 					}
 				}
@@ -340,36 +319,71 @@
 	        		//  Get the alpha
 	        		currentPoster.fade();
 	        		ctx.globalAlpha = currentPoster.color.alpha;
-			        
-			        if ( i <1) {
-				        
-				        if ( j <1) {
-				        	
-				        	//  Debug
-				        	/*
-if (this.current.offsetX != lastOffsetX) {
-				        		console.log('scale :' + this.scale + ' / offset :' + this.current.offsetX + ' / corrected offset :' + (this.current.offsetX/this.scale));
-				        		lastOffsetX = this.current.offsetX;
-				        	}
-*/
-				        		
-					        ctx.drawImage(img, this.settings.tileWidth-(this.current.offsetX/this.scale), this.settings.tileHeight-(this.current.offsetY/this.scale), this.current.offsetX/this.scale, this.current.offsetY/this.scale, i*this.current.offsetX, j*this.current.offsetY, this.current.offsetX, this.current.offsetY);
+					
+					
+					if ( j < 1 ) {
+						var scaleDivideOffY = this.current.offsetY/this.scale
+						var tileHeightMinusOff = this.settings.tileHeight - scaleDivideOffY;
+					}
+					
+			        if ( i < 1 ) {
+				        var scaleDivideOffX = this.current.offsetX/this.scale;
+						var tileWidthMinusOff = this.settings.tileWidth - scaleDivideOffX;
+				        if ( j < 1 ) {        		
+					        ctx.drawImage(img, 
+							tileWidthMinusOff, 
+							tileHeightMinusOff, 
+							scaleDivideOffX, 
+							scaleDivideOffY, 
+							i*this.current.offsetX, 
+							j*this.current.offsetY, 
+							this.current.offsetX, 
+							this.current.offsetY);
 				        } else {
 					        
-					        ctx.drawImage(img, this.settings.tileWidth-(this.current.offsetX/this.scale), 0, this.current.offsetX/this.scale, this.settings.tileHeight, i*this.current.offsetX, this.current.offsetY + (j-1)*this.factorHeight, this.current.offsetX, this.factorHeight);
+					        ctx.drawImage(img, 
+							tileWidthMinusOff, 
+							0, 
+							scaleDivideOffX, 
+							this.settings.tileHeight, 
+							i*this.current.offsetX, 
+							this.factorOffsetLoopY(j), 
+							this.current.offsetX, 
+							this.factorHeight);
 						}
 						
 					} else {
 						
-						if ( j <1) {
-					        ctx.drawImage(img, 0, this.settings.tileHeight-(this.current.offsetY/this.scale), this.settings.tileWidth, this.current.offsetY/this.scale, this.current.offsetX + (i-1)*this.factorWidth, j*this.current.offsetY, this.factorWidth, this.current.offsetY);
+						if ( j < 1 ) {
+					        ctx.drawImage(img, 0, 
+							tileHeightMinusOff, 
+							this.settings.tileWidth, 
+							scaleDivideOffY, 
+							this.factorOffsetLoopX(i), 
+							j*this.current.offsetY, 
+							this.factorWidth, 
+							this.current.offsetY);
 				        } else {
-					        ctx.drawImage(img, 0, 0, this.settings.tileWidth, this.settings.tileHeight, this.current.offsetX + (i-1)*this.factorWidth, this.current.offsetY + (j-1)*this.factorHeight, this.factorWidth, this.factorHeight)
+					        ctx.drawImage(img, 0, 0, 
+							this.settings.tileWidth, 
+							this.settings.tileHeight, 
+							this.factorOffsetLoopX(i), 
+							this.factorOffsetLoopY(j), 
+							this.factorWidth, 
+							this.factorHeight)
 						}
 					}
 				}
 		    } 
 	    }
+		
+		this.factorOffsetLoopX = function(i){
+			return this.current.offsetX + (i-1)*this.factorWidth;
+		}
+		
+		this.factorOffsetLoopY = function(j){
+			return this.current.offsetY + (j-1)*this.factorHeight;
+		}
 	}
 
 //  Class Poster
@@ -377,11 +391,16 @@ var shuffleCounter = 0;
 
 function Poster() {
 	var self = this;
+	
 	this.color = {
 	    red: randomPick(1, 255),
 	    green: randomPick(1, 255),
 	    blue: randomPick(1, 255),
-	    alpha: 0
+	    alpha: 0,
+		rgba: function(){
+			var c = self.color;
+			return [c.red, c.green, c.blue, c.alpha].join(",");
+		}
 	};
 	
 	//  Apply Spread Mode
@@ -403,6 +422,9 @@ function Poster() {
 	    	this.index = parseInt(library[shuffleCounter].id);
 	    	shuffleCounter++;
 	    }
+		
+		this.imgSrc = library[shuffleCounter].src;
+		shuffleCounter++;
 	//console.log(shuffleCounter);
 	};
 	
@@ -420,8 +442,7 @@ function Poster() {
 	this.fade = function () {
 		
 		//  If the poster is not in the viewport
-		if ( this.inViewport_bl == false && this.blacked_bl == true ) {
-			this.rgba = "rgba(0, 0, 0, 1)";
+		if ( this.inViewport == false && this.blacked == true ) {
 			
 			//  Get a chance to get the poster unblacked
 			var chance = randomPick(1, 45 - this.factor);
@@ -459,10 +480,11 @@ function Poster() {
 				}
 */
 				
-        		this.color.alpha = easeOutCubic(this.time, 0, this.alphaEnd, 200 );
-        		this.time++;
+        		this.color.alpha = easeOutCubic(this.time++, 0, this.alphaEnd, 200 );
+				this.rgba = "rgba(" + this.color.rgba() + ")";
     		}
-    		this.rgba = "rgba(" + this.color.red + "," + this.color.green + "," + this.color.blue  + "," + this.color.alpha + ")";
+			
+    		
     	
     	//  If other case throw error
 		} else {
@@ -523,5 +545,9 @@ var fps = {
 		}
 		return result;
 
-	}	
+	}
 };
+
+function defaultClickCallback(){
+	console.log('click');
+}

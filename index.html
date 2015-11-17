@@ -51,6 +51,8 @@
 	    <script type="text/javascript">
 	    
 	    var library = $('.library');
+		
+		
 	
 	    //  Init
 	    var posters = [];
@@ -66,7 +68,8 @@
 		    					scale: 1,
 		    					minScale: 0.15,
 		    					masScale: 1.85,
-		    					spreadMode: 'shuffle'
+		    					spreadMode: 'shuffle',
+								//onClickCallback: openFocus
 	    					});
 	    generate(posters);
 	    wall.create();
