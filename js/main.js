@@ -408,11 +408,11 @@ function Poster() {
 	
 	this.width = 50;
 	this.height = 50;
-	this.inViewport = false;
-	this.blacked = true;
+	this.inViewport_bl = false;
+	this.blacked_bl = true;
 	this.factor = 1;
 	this.time = 0;
-	this.alphaEnd = 1;			//  If the poster is being hovered, alphaEnd = 0.5;
+	this.alphaEnd = 1;					//  If the poster is being hovered, alphaEnd = 0.5;
 	this.rgba;
 	this.hovered = false;
 	
@@ -420,34 +420,34 @@ function Poster() {
 	this.fade = function () {
 		
 		//  If the poster is not in the viewport
-		if ( this.inViewport == false && this.blacked == true ) {
+		if ( this.inViewport_bl == false && this.blacked_bl == true ) {
 			this.rgba = "rgba(0, 0, 0, 1)";
 			
 			//  Get a chance to get the poster unblacked
 			var chance = randomPick(1, 45 - this.factor);
 			if ( chance == 1 ) {
-				this.blacked = false;
+				this.blacked_bl = false;
 				this.factor = 1;
 			} else {
 				this.factor++;
 			}
 			
-			this.inViewport = true;
+			this.inViewport_bl = true;
 		
 		//  If the poster is in the viewport but blacked
-		} else if ( this.inViewport == true && this.blacked == true ) {
+		} else if ( this.inViewport_bl == true && this.blacked_bl == true ) {
 			
 			//  Get a chance to get the poster unblacked
 			var chance = randomPick(1, 45 - this.factor);
 			if ( chance == 1 ) {
-				this.blacked = false;
+				this.blacked_bl = false;
 				this.factor = 1;
 			} else {
 				this.factor++;
 			}
 		
 		//  If the poster is in the viewport and not blacked
-		} else if ( this.inViewport == true && this.blacked == false ){
+		} else if ( this.inViewport_bl == true && this.blacked_bl == false ){
 			if ( this.color.alpha < 1 ) {
 				
 				/*

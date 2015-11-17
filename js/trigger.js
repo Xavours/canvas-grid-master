@@ -234,7 +234,11 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 		window.setInterval(function(){
 			if ( wall.scale >= wall.settings.minScale && wall.scale <= wall.settings.maxScale ) { 
 			    	
-			    	var lastScale = wall.scale;
+			    	var current = wallContent[0][0];
+			    	console.log( 'alphaEnd : ' + current.aplhaEnd + ' / rgba : ' + current.rgba + ' / time : ' + current.time );
+			    	
+			    	/*
+var lastScale = wall.scale;
 			    	wall.scale += 0.05;
 			    	var diffScale = wall.scale - lastScale;
 		        
@@ -252,9 +256,10 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 						
 						console.log('ZOOM : pX ' + wall.current.positionX + ' / diff : ' + diffScale + ' / corr : ' + (diffScale * (wall.current.positionX + wall.width / 2)) + ' / scale : ' + wall.scale);
 						//console.log( 'ZOOM :' + wall.current.positionX + '  //  ' + wall.current.positionY );
+
 						
 						
-			    	}
+			    	}*/
 				}
 		}, sec);
 		
