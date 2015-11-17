@@ -203,13 +203,17 @@
 	    
 	    this.onClick = function (tile) {
 		    console.log('click');
+		    OpenInNewTab(tile.imgSrc);
 		    
+		    //  Custom for flyposter.ca
 		    openFocus(tile.index);
 	    }
 	    
 	    this.onMouseover = function (tile) {
 	    	
 	    	if ( typeof lastTileHovered.color == 'undefined' ) {
+			    
+			    self.current.tileHoveredAlpha = tile.color.alpha;
 			    
 			    tile.color.alpha = 0.5;
 			    tile.alphaEnd = 0.5;
@@ -220,8 +224,10 @@
 			    
 		    } else if ( tile.hovered !== lastTileHovered.hovered ) {
 		    
-			    lastTileHovered.color.alpha = 1;
-			    lastTileHovered.alphaEnd = 1;
+			    self.current.tileHoveredAlpha = tile.color.alpha;
+			    
+			    lastTileHovered.color.alpha = self.current.tileHoveredAlpha;
+			    lastTileHovered.alphaEnd = self.current.tileHoveredAlpha;
 			    lastTileHovered.time = 200;
 			    
 			    tile.color.alpha = 0.5;
@@ -386,7 +392,7 @@ function Poster() {
 	    	this.imgSrc = library[shuffleCounter].src;
 	    	
 	    	//  Custom for flyposter.ca
-	    	this.index = library[shuffleCounter].id;
+	    	this.index = parseInt(library[shuffleCounter].id);
 	    	shuffleCounter++;
 	    } else {
 	    	shuffle(library);
@@ -394,7 +400,7 @@ function Poster() {
 	    	this.imgSrc = library[shuffleCounter].src;
 	    	
 	    	//  Custom for flyposter.ca
-	    	this.index = library[shuffleCounter].id;
+	    	this.index = parseInt(library[shuffleCounter].id);
 	    	shuffleCounter++;
 	    }
 	//console.log(shuffleCounter);

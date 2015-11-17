@@ -128,7 +128,7 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 	//  Bind click
 	eventHandler.on("tap", function(e) {
         
-        var target = wall.current.identifyTile(e.center.x, e.center.y)
+        var target = wall.getTile(e.center.x, e.center.y)
         //console.log('alpha : ' + target.color.alpha + '  /  alphaEnd : ' + target.alphaEnd);
         wall.onClick(target);
         
