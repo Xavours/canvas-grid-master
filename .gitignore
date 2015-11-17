@@ -67,3 +67,9 @@ node_modules
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+##
+## Ignoring it's own compiled stuff
+##
+app.min.js
+app.min.css
