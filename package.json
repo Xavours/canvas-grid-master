@@ -1,25 +1,39 @@
 {
   "name": "canvas-grid-master",
   "version": "1.0.0",
-  "description": "",
+  "description": "Canvas-grid-master is an endless grid in canvas to browse a bunch of images stored in a folder. Work in progress. Will be probably released in November 2015.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "./node_modules/grunt-cli/bin/grunt"
   },
   "author": "Xavier Orssaud",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "grunt": "^0.4.5",
     "grunt-autoprefixer": "^0.8.1",
     "grunt-cli": "^0.1.13",
     "grunt-contrib-clean": "^0.5.0",
-    "grunt-contrib-less": "^1.0.1",
     "grunt-contrib-uglify": "^0.9.2",
     "grunt-contrib-watch": "^0.6.1",
     "load-grunt-tasks": "^3.2.0"
   },
   "devDependencies": {
     "grunt-sass": "^1.1.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Xavours/canvas-grid-master.git"
+  },
+  "keywords": [
+    "canvas",
+    "grid",
+    "infinite",
+    "image",
+    "zoom"
+  ],
+  "bugs": {
+    "url": "https://github.com/Xavours/canvas-grid-master/issues"
+  },
+  "homepage": "https://github.com/Xavours/canvas-grid-master#readme"
 }

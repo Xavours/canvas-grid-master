@@ -3,37 +3,49 @@ module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
 	  
-	less: {
-      styles: {
-        files: {
-          'min/app.min.css': ["css/reset.css","less/style.less"]
+	//  Convert SASS files into CSS  
+  	sass: {
+        options: {
+            sourceMap: true
+        },
+        dist: {
+            files: {
+            	'css/style.css': 'css/style.scss',
+            }
         }
-      }
     },
 
-    autoprefixer: {
+	//  Minify CSS  
+    cssmin: {
+	  target: {
+	    files: {
+	      'min/app.min.css': 'css/*.css'
+	    }
+	  }
+	},
+
+    //  Autoprefix CSS  
+	autoprefixer: {
       styles: {
         files: {
           'min/app.min.css': 'min/app.min.css'
         }
       }
     },
-
-    clean: {
-      styles: ['min/app.min.css']
-    },
-
+	
+	//  Watch
     watch: {
       scripts: {
-        files: ['**/*.less', '**/*.js', 'gruntfile.js'],
-        tasks: ['uglify','less'],
+        files: ['**/*.scss', '**/*.js', 'gruntfile.js'],
+        tasks: ['build'],
         options: {
           spawn: false,
           livereload: 8888,
         },
       },
     },
-
+	
+	//  Minify JS
     uglify: {
       options: {
         mangle: false
@@ -47,7 +59,10 @@ module.exports = function(grunt) {
 	  
         }
       }
-    }
+    },
+    
+	//  Clean .css and .css.map from sass files
+    clean: ["css/*.css.map"]
   });
 
 
@@ -57,7 +72,7 @@ module.exports = function(grunt) {
   // Default task(s).
   grunt.registerTask('default', ['build', 'watch']);
   
-  grunt.registerTask('build', ['styles', 'uglify']);
-  grunt.registerTask('styles', ['less:styles', 'autoprefixer:styles', 'clean:styles']);
+  grunt.registerTask('build', ['styles', 'uglify', 'clean']);
+  grunt.registerTask('styles', ['sass', 'cssmin', 'autoprefixer:styles']);
 
 };
