@@ -165,9 +165,25 @@ function validOptions(param){
 			}
 		}
 		
+		if ( param.hasOwnProperty('numberTile') ) {
+			if( Object.toType(param.numberTile) !== 'number'){
+				console.error('numberTile is not a number');
+				valid = false;
+			}
+		}
+		
+		
+		//  Methods
 		if ( param.hasOwnProperty('onClickCallback') ) {
 			if( Object.toType(param.onClickCallback) !== 'function'){
 				console.error('onClickCallback is not a function');
+				valid = false;
+			}
+		}
+		
+		if ( param.hasOwnProperty('mouseoverCallback') ) {
+			if( Object.toType(param.mouseoverCallback) !== 'function'){
+				console.error('mouseoverCallback is not a function');
 				valid = false;
 			}
 		}

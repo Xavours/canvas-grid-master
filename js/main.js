@@ -43,20 +43,33 @@
 	    
 	    //  Default settings
 	    this.settings = {
+	    
+	    	// Main options
 		    tileWidth: 300,
 		    tileHeight: 400,
 		    content: 'rectangle',
 		    fadeAnimation: 'easeOutCubic',
+		    
+		    // Scale options
 		    scaleOn: true,
 		    scale: 1,
 		    minScale: 0.25,
 		    maxScale: 1.75,
 		    scaleSensitivity: 1,
+		    
+		    // Spread options
 		    spreadMode: 'random',
+		    numberTile: 100,
+		    
+		    //  Render Options
 		    startX: 0, //  TBD
 		    starY: 0, //  TBD
-			onClickCallback: defaultClickCallback
+		    
+		    //  Event Options
+			onClickCallback: function() {console.log('click')},
+			mouseoverCallback: function() {}
 	    }
+	    this.numberTile = this.settings.numberTile;
 	    
 	    //  Get new settings
 	    params && validOptions(params)?$.extend( this.settings, params ):console.error('Some options are not valid');
@@ -119,19 +132,19 @@
 	            
 	            //  Considering the fact that my grid is limited
 	            //  If a number is out of grid, the goal is to give him an id in the other side of the grid as it was a pattern
-	        	if ( newX < 0 || newX >= 250 ) {
+	        	if ( newX < 0 || newX >= self.numberTile ) {
 					var absX = Math.abs(newX);
-	        		finalX = ( isEven( Math.floor( absX/250) ) ) ? 250-absX : absX-250;
+	        		finalX = ( isEven( Math.floor( absX/self.numberTile) ) ) ? self.numberTile-absX : absX-self.numberTile;
 	        	}
 	        	
-	        	if ( newY < 0 || newY >= 250 ) {
+	        	if ( newY < 0 || newY >= self.numberTile ) {
 					var absY = Math.abs(newY);
-	        		finalY = ( isEven( Math.floor( absY/250) ) ) ? 250-absY : absY-250;
+	        		finalY = ( isEven( Math.floor( absY/self.numberTile) ) ) ? self.numberTile-absY : absY-self.numberTile;
 	        	}
 	        	
 	        	//console.log( finalX + ' / ' + finalY );
 
-				//return this.source[ (this.current.tileX + newX) % 250 ][ (this.current.tileY + newY) % 250 ]; 
+				//return this.source[ (this.current.tileX + newX) % self.numberTile ][ (this.current.tileY + newY) % self.numberTile ]; 
 
 	        	
 	        },
@@ -157,16 +170,16 @@
 	            
 	            //  Considering the fact that my grid is limited
 	            //  If a number is out of grid, the goal is to give him an id in the other side of the grid as it was a pattern
-	        	if ( newX < 0 || newX >= 250 ) {
+	            if ( newX < 0 || newX >= self.numberTile ) {
 					var absX = Math.abs(newX);
-	        		this.tileX = ( isEven( Math.floor( absX/250) ) ) ? 250-absX : absX-250;
+	        		this.tileX = ( isEven( Math.floor( absX/self.numberTile) ) ) ? self.numberTile-absX : absX-self.numberTile;
 	        	} else {
 		        	this.tileX = newX;
 	        	}
 	        	
-	        	if ( newY < 0 || newY >= 250 ) {
+	        	if ( newY < 0 || newY >= self.numberTile ) {
 					var absY = Math.abs(newY);
-	        		this.tileY = ( isEven( Math.floor( absY/250) ) ) ? 250-absY : absY-250;
+	        		this.tileY = ( isEven( Math.floor( absY/self.numberTile) ) ) ? self.numberTile-absY : absY-self.numberTile;
 	        	} else {
 		        	this.tileY = newY;
 	        	}
@@ -195,7 +208,8 @@
 		        newY = Math.floor( tempY / this.factorWidth + 1 );
 	        }
 			
-			return this.source[ (this.current.tileX + newX) % 250 ][ (this.current.tileY + newY) % 250 ]; 
+			//console.log('x : ' + (this.current.tileX + newX) % self.numberTile + '  /  y : ' + (this.current.tileY + newY) % self.numberTile);
+			return this.source[ (this.current.tileX + newX) % self.numberTile ][ (this.current.tileY + newY) % self.numberTile ];
 	    }
 
 	    this.onClick = function () {	    
@@ -206,32 +220,41 @@
 	    	
 	    	if ( typeof lastTileHovered.color == 'undefined' ) {
 			    
-			    self.current.tileHoveredAlpha = tile.color.alpha;
+			    self.current.tileHoveredAlpha = 1;
 			    
-			    tile.color.alpha = 0.5;
-			    tile.alphaEnd = 0.5;
-			    tile.time = 200;
+			    tile.startTime = Date.now();
+			    tile.alphaEnd = 0.3;
+			    tile.calculAlpha(tile.alpha, 300);
 			    
 			    tile.hovered = true;
 			    lastTileHovered = tile;
 			    
 		    } else if ( tile.hovered !== lastTileHovered.hovered ) {
-		    
-			    self.current.tileHoveredAlpha = tile.color.alpha;
-			    
-			    lastTileHovered.color.alpha = self.current.tileHoveredAlpha;
+		    	
+		    	// Restore the alpha of the last tile hovered
+		    	lastTileHovered.startTime = Date.now();
 			    lastTileHovered.alphaEnd = self.current.tileHoveredAlpha;
-			    lastTileHovered.time = 200;
-			    
-			    tile.color.alpha = 0.5;
-			    tile.alphaEnd = 0.5;
-			    tile.time = 200;
-			    
+			    lastTileHovered.calculAlpha(lastTileHovered.alpha, 300);
 			    lastTileHovered.hovered = false;
+		    	
+		    	//  Store the actual alpha of the new tile hovered before to change it
+		    	self.current.tileHoveredAlpha = tile.color.alpha;
+		    	
+		    	//  Hover the new tile
+		    	tile.startTime = Date.now();
+			    tile.alphaEnd = 0.3;
+			    tile.calculAlpha(tile.alpha, 300);
 			    tile.hovered = true;
-			    lastTileHovered = tile;
 			    
-		    }		    
+			    //  Update last tile hovered
+			    lastTileHovered = tile;
+				
+			    
+			    
+			    
+		    }
+		    
+		    this.settings.mouseoverCallback();  
 	    }
 	    
 	    //  Rendering methods
@@ -255,8 +278,8 @@
 	    	for (var i = 0; i < self.numberRow; i++) {
 	        	for (var j = 0; j < self.numberCol; j++) {
 	        		
-	        		var x = (this.current.tileX+i) % 250;
-	        		var y = (this.current.tileY+j) % 250;
+	        		var x = (this.current.tileX+i) % self.numberTile;
+	        		var y = (this.current.tileY+j) % self.numberTile;
 	        		var currentPoster = this.source[x][y];
 	        		//  Get the color of the rectangle
 	        		currentPoster.fade();
@@ -303,8 +326,8 @@
 	        for (var i = 0; i <self.numberRow; i++) {
 	        	for (var j = 0; j <self.numberCol; j++) {
 	        	
-	        		var x = (this.current.tileX+i) % 250;
-	        		var y = (this.current.tileY+j) % 250;
+	        		var x = (this.current.tileX+i) % self.numberTile;
+	        		var y = (this.current.tileY+j) % self.numberTile;
 	        		
 	        		//console.log(this.source);
 	        		var currentPoster = this.source[x][y];
@@ -411,16 +434,13 @@ function Poster() {
 	    	this.imgSrc = library[shuffleCounter].src;
 	    	
 	    	//  Custom for flyposter.ca
-	    	this.index = parseInt(library[shuffleCounter].id);
-	    	shuffleCounter++;
+	    	/* this.index = parseInt(library[shuffleCounter].id); */
 	    } else {
 	    	shuffle(library);
 	    	shuffleCounter = 0;
-	    	this.imgSrc = library[shuffleCounter].src;
 	    	
 	    	//  Custom for flyposter.ca
-	    	this.index = parseInt(library[shuffleCounter].id);
-	    	shuffleCounter++;
+	    	/* this.index = parseInt(library[shuffleCounter].id); */
 	    }
 		
 		this.imgSrc = library[shuffleCounter].src;
@@ -433,16 +453,24 @@ function Poster() {
 	this.inViewport_bl = false;
 	this.blacked_bl = true;
 	this.factor = 1;
-	this.time = 0;
 	this.alphaEnd = 1;					//  If the poster is being hovered, alphaEnd = 0.5;
 	this.rgba;
 	this.hovered = false;
 	
 	//  Determine what is the level of fade of the tile
+	this.calculAlpha = function (alphaStart, time) {
+		this.time = Date.now();
+	    this.currentTime = this.time - this.startTime;
+	    this.color.alpha = easeOutCubic(this.currentTime, alphaStart, this.alphaEnd, time);
+	    
+	    //  If time is over, give it the alphaEnd
+	    if (this.currentTime > 1000) this.color.alpha = this.alphaEnd;
+	}
+	
 	this.fade = function () {
 		
 		//  If the poster is not in the viewport
-		if ( this.inViewport == false && this.blacked == true ) {
+		if ( this.inViewport_bl == false && this.blacked_bl == true ) {
 			
 			//  Get a chance to get the poster unblacked
 			var chance = randomPick(1, 45 - this.factor);
@@ -463,6 +491,7 @@ function Poster() {
 			if ( chance == 1 ) {
 				this.blacked_bl = false;
 				this.factor = 1;
+				this.startTime = Date.now();
 			} else {
 				this.factor++;
 			}
@@ -471,16 +500,8 @@ function Poster() {
 		} else if ( this.inViewport_bl == true && this.blacked_bl == false ){
 			if ( this.color.alpha < 1 ) {
 				
-				/*
-//  Adapt lenght of fading image to the number of images displayed to counter the drop of FPS
-				if ( wall.scale >= 1) {
-					var animationTime = 250;
-				} else {
-					var animationTime = 250*wall.scale;
-				}
-*/
-				
-        		this.color.alpha = easeOutCubic(this.time++, 0, this.alphaEnd, 200 );
+				this.calculAlpha(0, 1000);
+			    
 				this.rgba = "rgba(" + this.color.rgba() + ")";
     		}
 			
@@ -496,9 +517,11 @@ function Poster() {
 
 //  Generate array
 function generate(array) {
-	for (var i = 0; i < 250; i++) {
+
+	shuffle(library);
+	for (var i = 0; i < wall.numberTile; i++) {
 		var col = [];
-		for (var j = 0; j < 250; j++) {
+		for (var j = 0; j < wall.numberTile; j++) {
 		    var poster = new Poster;
 		    col.push(poster);
 		}
@@ -547,7 +570,3 @@ var fps = {
 
 	}
 };
-
-function defaultClickCallback(){
-	console.log('click');
-}
