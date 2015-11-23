@@ -200,8 +200,6 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 		
 		    case 38:
 		        // up
-		        wall.scale += 0.05;
-				wall.render();
 		        break;
 		
 		    case 39:
@@ -210,8 +208,6 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 		
 		    case 40:
 		        // down
-		        wall.scale -= 0.05;
-				wall.render();
 		        break;
 		
 		    default:
