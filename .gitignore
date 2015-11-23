@@ -71,6 +71,5 @@ Thumbs.db
 ##
 ## Ignoring it's own compiled stuff
 ##
-app.min.js
-canvas-grid-master.min.js
-app.min.css
+min/*.*
+min/canvas-grid-master.min.js

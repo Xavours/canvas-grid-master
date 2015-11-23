@@ -106,7 +106,7 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 						wall.current.positionY += correctionY;
 						
 						//wall.current.identifyTile(wall.current.viewportX, wall.current.viewportY);
-						console.log(wall.scale + '  /  ' + correctionX + '  /  ' + correctionY);
+						//console.log(wall.scale + '  /  ' + correctionX + '  /  ' + correctionY);
 			    	}
 				}
 			}
@@ -231,7 +231,7 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 			if ( wall.scale >= wall.settings.minScale && wall.scale <= wall.settings.maxScale ) { 
 			    	
 			    	var current = wallContent[0][0];
-			    	console.log( 'alphaEnd : ' + current.aplhaEnd + ' / rgba : ' + current.rgba + ' / time : ' + current.time );
+			    	//console.log( 'alphaEnd : ' + current.aplhaEnd + ' / rgba : ' + current.rgba + ' / time : ' + current.time );
 			    	
 			    	/*
 var lastScale = wall.scale;
