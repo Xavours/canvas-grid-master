@@ -67,9 +67,8 @@
 		    
 		    //  Event Options
 			onClickCallback: function() {console.log('click')},
-			mouseoverCallback: function() {}
+			mouseoverCallback: function(tile) {self.onMouseover(tile)}
 	    }
-	    this.numberTile = this.settings.numberTile;
 	    
 	    //  Get new settings
 	    params && validOptions(params)?$.extend( this.settings, params ):console.error('Some options are not valid');
@@ -132,19 +131,19 @@
 	            
 	            //  Considering the fact that my grid is limited
 	            //  If a number is out of grid, the goal is to give him an id in the other side of the grid as it was a pattern
-	        	if ( newX < 0 || newX >= self.numberTile ) {
+	        	if ( newX < 0 || newX >= self.settings.numberTile ) {
 					var absX = Math.abs(newX);
-	        		finalX = ( isEven( Math.floor( absX/self.numberTile) ) ) ? self.numberTile-absX : absX-self.numberTile;
+	        		finalX = ( isEven( Math.floor( absX/self.settings.numberTile) ) ) ? self.settings.numberTile-absX : absX-self.settings.numberTile;
 	        	}
 	        	
-	        	if ( newY < 0 || newY >= self.numberTile ) {
+	        	if ( newY < 0 || newY >= self.settings.numberTile ) {
 					var absY = Math.abs(newY);
-	        		finalY = ( isEven( Math.floor( absY/self.numberTile) ) ) ? self.numberTile-absY : absY-self.numberTile;
+	        		finalY = ( isEven( Math.floor( absY/self.settings.numberTile) ) ) ? self.settings.numberTile-absY : absY-self.settings.numberTile;
 	        	}
 	        	
 	        	//console.log( finalX + ' / ' + finalY );
 
-				//return this.source[ (this.current.tileX + newX) % self.numberTile ][ (this.current.tileY + newY) % self.numberTile ]; 
+				//return this.source[ (this.current.tileX + newX) % self.settings.numberTile ][ (this.current.tileY + newY) % self.settings.numberTile ]; 
 
 	        	
 	        },
@@ -170,16 +169,16 @@
 	            
 	            //  Considering the fact that my grid is limited
 	            //  If a number is out of grid, the goal is to give him an id in the other side of the grid as it was a pattern
-	            if ( newX < 0 || newX >= self.numberTile ) {
+	            if ( newX < 0 || newX >= self.settings.numberTile ) {
 					var absX = Math.abs(newX);
-	        		this.tileX = ( isEven( Math.floor( absX/self.numberTile) ) ) ? self.numberTile-absX : absX-self.numberTile;
+	        		this.tileX = ( isEven( Math.floor( absX/self.settings.numberTile) ) ) ? self.settings.numberTile-absX : absX-self.settings.numberTile;
 	        	} else {
 		        	this.tileX = newX;
 	        	}
 	        	
-	        	if ( newY < 0 || newY >= self.numberTile ) {
+	        	if ( newY < 0 || newY >= self.settings.numberTile ) {
 					var absY = Math.abs(newY);
-	        		this.tileY = ( isEven( Math.floor( absY/self.numberTile) ) ) ? self.numberTile-absY : absY-self.numberTile;
+	        		this.tileY = ( isEven( Math.floor( absY/self.settings.numberTile) ) ) ? self.settings.numberTile-absY : absY-self.settings.numberTile;
 	        	} else {
 		        	this.tileY = newY;
 	        	}
@@ -205,11 +204,11 @@
 		        newX = Math.floor( tempX / this.factorWidth + 1 );
 	        }
 	        if (tempY >= 0) {
-		        newY = Math.floor( tempY / this.factorWidth + 1 );
+		        newY = Math.floor( tempY / this.factorHeight + 1 );
 	        }
 			
-			//console.log('x : ' + (this.current.tileX + newX) % self.numberTile + '  /  y : ' + (this.current.tileY + newY) % self.numberTile);
-			return this.source[ (this.current.tileX + newX) % self.numberTile ][ (this.current.tileY + newY) % self.numberTile ];
+			//console.log('x : ' + (this.current.tileX + newX) % self.settings.numberTile + '  /  y : ' + (this.current.tileY + newY) % self.settings.numberTile);
+			return this.source[ (this.current.tileX + newX) % self.settings.numberTile ][ (this.current.tileY + newY) % self.settings.numberTile ];
 	    }
 
 	    this.onClick = function () {	    
@@ -219,14 +218,15 @@
 	    this.onMouseover = function (tile) {
 	    	
 	    	if ( typeof lastTileHovered.color == 'undefined' ) {
-			    
-			    self.current.tileHoveredAlpha = 1;
+	    	
+	    		self.current.tileHoveredAlpha = 1;
 			    
 			    tile.startTime = Date.now();
 			    tile.alphaEnd = 0.3;
-			    tile.calculAlpha(tile.alpha, 300);
-			    
+			    tile.alphaStart = tile.color.alpha;
+			    tile.alphaComplete_bl = false;
 			    tile.hovered = true;
+			    
 			    lastTileHovered = tile;
 			    
 		    } else if ( tile.hovered !== lastTileHovered.hovered ) {
@@ -234,7 +234,8 @@
 		    	// Restore the alpha of the last tile hovered
 		    	lastTileHovered.startTime = Date.now();
 			    lastTileHovered.alphaEnd = self.current.tileHoveredAlpha;
-			    lastTileHovered.calculAlpha(lastTileHovered.alpha, 300);
+			    lastTileHovered.alphaStart = lastTileHovered.color.alpha;
+			    lastTileHovered.alphaComplete_bl = false;
 			    lastTileHovered.hovered = false;
 		    	
 		    	//  Store the actual alpha of the new tile hovered before to change it
@@ -243,18 +244,16 @@
 		    	//  Hover the new tile
 		    	tile.startTime = Date.now();
 			    tile.alphaEnd = 0.3;
-			    tile.calculAlpha(tile.alpha, 300);
+			    tile.alphaStart = tile.color.alpha;
+			    tile.alphaComplete_bl = false;
 			    tile.hovered = true;
 			    
 			    //  Update last tile hovered
 			    lastTileHovered = tile;
-				
-			    
-			    
 			    
 		    }
 		    
-		    this.settings.mouseoverCallback();  
+		    //this.settings.mouseoverCallback();  
 	    }
 	    
 	    //  Rendering methods
@@ -278,8 +277,8 @@
 	    	for (var i = 0; i < self.numberRow; i++) {
 	        	for (var j = 0; j < self.numberCol; j++) {
 	        		
-	        		var x = (this.current.tileX+i) % self.numberTile;
-	        		var y = (this.current.tileY+j) % self.numberTile;
+	        		var x = (this.current.tileX+i) % self.settings.numberTile;
+	        		var y = (this.current.tileY+j) % self.settings.numberTile;
 	        		var currentPoster = this.source[x][y];
 	        		//  Get the color of the rectangle
 	        		currentPoster.fade();
@@ -326,8 +325,8 @@
 	        for (var i = 0; i <self.numberRow; i++) {
 	        	for (var j = 0; j <self.numberCol; j++) {
 	        	
-	        		var x = (this.current.tileX+i) % self.numberTile;
-	        		var y = (this.current.tileY+j) % self.numberTile;
+	        		var x = (this.current.tileX+i) % self.settings.numberTile;
+	        		var y = (this.current.tileY+j) % self.settings.numberTile;
 	        		
 	        		//console.log(this.source);
 	        		var currentPoster = this.source[x][y];
@@ -434,13 +433,13 @@ function Poster() {
 	    	this.imgSrc = library[shuffleCounter].src;
 	    	
 	    	//  Custom for flyposter.ca
-	    	/* this.index = parseInt(library[shuffleCounter].id); */
+	    	this.index = parseInt(library[shuffleCounter].id);
 	    } else {
 	    	shuffle(library);
 	    	shuffleCounter = 0;
 	    	
 	    	//  Custom for flyposter.ca
-	    	/* this.index = parseInt(library[shuffleCounter].id); */
+	    	this.index = parseInt(library[shuffleCounter].id);
 	    }
 		
 		this.imgSrc = library[shuffleCounter].src;
@@ -453,18 +452,28 @@ function Poster() {
 	this.inViewport_bl = false;
 	this.blacked_bl = true;
 	this.factor = 1;
-	this.alphaEnd = 1;					//  If the poster is being hovered, alphaEnd = 0.5;
+	this.alphaStart = 0;
+	this.alphaEnd = 1;
+	this.alphaComplete_bl = false;				
+	this.alphaDelta;
 	this.rgba;
 	this.hovered = false;
 	
 	//  Determine what is the level of fade of the tile
-	this.calculAlpha = function (alphaStart, time) {
+	this.calculAlpha = function () {
+		
+		//  Calcul delta
+		this.alphaDelta = this.alphaEnd - this.alphaStart;
+	
 		this.time = Date.now();
 	    this.currentTime = this.time - this.startTime;
-	    this.color.alpha = easeOutCubic(this.currentTime, alphaStart, this.alphaEnd, time);
+	    this.color.alpha = easeOutCubic(this.currentTime, this.alphaStart, this.alphaDelta, 1000);
 	    
-	    //  If time is over, give it the alphaEnd
-	    if (this.currentTime > 1000) this.color.alpha = this.alphaEnd;
+	    //  If time is over, give it the alphaEnd or alpha > alphaEnd
+	    if (this.currentTime > 1000) {
+	    	this.color.alpha = this.alphaEnd;
+	    	this.alphaComplete_bl = true;
+	    }
 	}
 	
 	this.fade = function () {
@@ -497,20 +506,17 @@ function Poster() {
 			}
 		
 		//  If the poster is in the viewport and not blacked
-		} else if ( this.inViewport_bl == true && this.blacked_bl == false ){
-			if ( this.color.alpha < 1 ) {
-				
-				this.calculAlpha(0, 1000);
-			    
-				this.rgba = "rgba(" + this.color.rgba() + ")";
-    		}
+		} else if ( this.inViewport_bl && !this.blacked_bl && !this.alphaComplete_bl){
 			
-    		
+			this.calculAlpha();
+			this.rgba = "rgba(" + this.color.rgba() + ")";
     	
     	//  If other case throw error
-		} else {
+		}/*
+ else {
 			console.error( "FADE PROBLEM" );
 		}
+*/
 		
 	}
 }
@@ -519,9 +525,9 @@ function Poster() {
 function generate(array) {
 
 	shuffle(library);
-	for (var i = 0; i < wall.numberTile; i++) {
+	for (var i = 0; i < wall.settings.numberTile; i++) {
 		var col = [];
-		for (var j = 0; j < wall.numberTile; j++) {
+		for (var j = 0; j < wall.settings.numberTile; j++) {
 		    var poster = new Poster;
 		    col.push(poster);
 		}
@@ -570,3 +576,20 @@ var fps = {
 
 	}
 };
+
+var iFrequency = 50; // expressed in miliseconds
+var myInterval = 0;
+
+// STARTS and Resets the loop if any
+function debug(tile) {
+    if(myInterval > 0) clearInterval(myInterval);  // stop
+    myInterval = setInterval( "doSomething(tile)", iFrequency );  // run
+}
+
+function doSomething(tile) {
+    console.log('alpha : ' + tile.color.alpha);
+}
+
+function stop() {
+    clearInterval(myInterval);
+}

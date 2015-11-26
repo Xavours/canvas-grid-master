@@ -225,38 +225,15 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 //  Debug
 	var myInterval = 0;
 	
-	function debug(sec){
+	/*
+function debug(sec){
 	
 		window.setInterval(function(){
 			if ( wall.scale >= wall.settings.minScale && wall.scale <= wall.settings.maxScale ) { 
 			    	
 			    	var current = wallContent[0][0];
-			    	//console.log( 'alphaEnd : ' + current.aplhaEnd + ' / rgba : ' + current.rgba + ' / time : ' + current.time );
-			    	
-			    	/*
-var lastScale = wall.scale;
-			    	wall.scale += 0.05;
-			    	var diffScale = wall.scale - lastScale;
-		        
-			    	if (wall.scale < wall.settings.minScale) {
-			    		wall.scale = wall.settings.minScale;
-			    	} else if (wall.scale > wall.settings.maxScale) {
-			    		wall.scale = wall.settings.maxScale;
-			    	} else {
-			    	
-			    		//console.log('ZOOM :' + wall.current.positionX + '  //  ' + wall.current.positionY + '  //  ' + wall.width + '  //  ' + wall.height);
-			    		
-				    	//  Correct position of viewport to have the feeling that it zooms in the center of the screen
-						wall.current.positionX += diffScale * (wall.current.positionX + wall.width / 2);
-						wall.current.positionY += diffScale * (wall.current.positionY + wall.height / 2);
-						
-						console.log('ZOOM : pX ' + wall.current.positionX + ' / diff : ' + diffScale + ' / corr : ' + (diffScale * (wall.current.positionX + wall.width / 2)) + ' / scale : ' + wall.scale);
-						//console.log( 'ZOOM :' + wall.current.positionX + '  //  ' + wall.current.positionY );
-
-						
-						
-			    	}*/
-				}
+			    					}
 		}, sec);
 		
 	}
+*/
