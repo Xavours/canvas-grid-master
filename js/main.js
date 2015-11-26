@@ -68,7 +68,7 @@
 		    //  Event Options
 			onClickCallback: function() {console.log('click')},
 			mouseoverCallback: function(tile) {self.onMouseover(tile)}
-	    }
+			}
 	    
 	    //  Get new settings
 	    params && validOptions(params)?$.extend( this.settings, params ):console.error('Some options are not valid');
@@ -211,8 +211,8 @@
 			return this.source[ (this.current.tileX + newX) % self.settings.numberTile ][ (this.current.tileY + newY) % self.settings.numberTile ];
 	    }
 
-	    this.onClick = function () {	    
-		    this.settings.onClickCallback();
+	    this.onClick = function (tile) {	    
+		    this.settings.onClickCallback(tile);
 	    }
 	    
 	    this.onMouseover = function (tile) {

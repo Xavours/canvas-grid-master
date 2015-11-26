@@ -129,7 +129,6 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 	eventHandler.on("tap", function(e) {
         
         var target = wall.getTile(e.center.x, e.center.y)
-        //console.log('alpha : ' + target.color.alpha + '  /  alphaEnd : ' + target.alphaEnd);
         wall.onClick(target);
         
 	});
