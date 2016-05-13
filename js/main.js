@@ -50,6 +50,10 @@
 		    content: 'rectangle',
 		    fadeAnimation: 'easeOutCubic',
 		    
+		    // Controller options
+		    controller: 'mouse',
+		    moveStep: 10,
+
 		    // Scale options
 		    scaleOn: true,
 		    scale: 1,
@@ -255,8 +259,68 @@
 		    
 		    //this.settings.mouseoverCallback();  
 	    }
-	    
+
+	    this.tileBlink = function (tile) {	    
+		    this.settings.onClickCallback(tile);
+	    }
+
+	    //  Viewport move methods
+	    this.goScale = function (delta) {
+	    	// Zoom if the option scaleOn is true
+		    if (this.settings.scaleOn) {
+		    			    
+				//Update Scale
+				if ( this.scale >= this.settings.minScale && this.scale <= this.settings.maxScale ) { 
+			    	
+			    	var lastScale = this.scale;
+			    	this.scale += (delta/2000);
+			    	var diffScale = this.scale - lastScale;
+		        
+			    	if (this.scale < this.settings.minScale) {
+			    		this.scale = this.settings.minScale;
+			    	} else if (this.scale > this.settings.maxScale) {
+			    		this.scale = this.settings.maxScale;
+			    	} else {
+			    			    		
+				    	//  Correct position of viewport to have the feeling that it zooms in the center of the screen
+				    		
+				    		//  Warning : diffScale can be bigger than (maxScale - lastScale) or (lastScale - minScale)
+				    		if ( diffScale > (this.settings.maxScale - lastScale) ) diffscale = this.settings.maxScale - lastScale;
+				    		if ( diffScale > (lastScale - this.settings.minScale) ) diffscale = lastScale - this.settings.minScale;
+				    		
+						var correctionX = diffScale * (this.current.viewportX + this.width / 2);
+						var correctionY = diffScale * (this.current.viewportY + this.height / 2);
+						
+						this.current.positionX += correctionX;
+						this.current.positionY += correctionY;
+			    	}
+				}
+			}
+	    }
+
+	    this.goTranslate = function (deltaX, deltaY) {
+
+	    	//  Update PositionX
+	        this.current.positionX += deltaX;
+	        this.current.positionY += deltaY;
+	        
+	        //  Update ViewportX
+	        this.current.viewportX += deltaX / this.scale;
+	        this.current.viewportY += deltaY / this.scale;
+	    }
+
 	    //  Rendering methods
+	    this.drawDebug = function () {
+	    
+	    	ctx.fillStyle = "#FF0000";
+	    	ctx.fillRect(wall.current.positionX, wall.current.positionY, 100, 100);
+
+	    	ctx.fillStyle = "#FFFF00";
+	    	ctx.fillRect(wall.current.viewportX, wall.current.viewportY, 100, 100);
+
+	        
+	    }
+
 	    this.render = function () {
 	    
 	    	//  Update Data
@@ -268,6 +332,7 @@
 	        ctx.clearRect(0, 0, self.width, self.height);
 	        
 	        //  Chosse rendering mode
+	        //this.drawDebug();
 	        if (this.settings.content == 'image') this.drawImages();
 	        else if (this.settings.content == 'rectangle') this.drawRectangles();
 	        

@@ -122,7 +122,24 @@ function validOptions(param){
 				valid = false;
 			}
 		}
-		
+
+		//  Controllers options
+		if ( param.hasOwnProperty('controller') ) {
+			if( Object.toType(param.controller) !== 'string'){
+				console.error('controller is not a string');
+				valid = false;
+			} else if ( param.controller !== 'mouse' && param.controller !== 'keyboard' && param.controller !== 'gamepad') {
+				console.error('controller : ' + param.controller + ' is not a valid option');
+				valid = false;
+			}
+		}
+
+		if ( param.hasOwnProperty('moveStep') ) {
+			if( Object.toType(param.moveStep) !== 'number'){
+				console.error('moveStep is not a number');
+				valid = false;
+			}
+		}
 		
 		//  Scale Options
 		if ( param.hasOwnProperty('scaleOn') ) {

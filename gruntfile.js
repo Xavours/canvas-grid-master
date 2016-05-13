@@ -52,7 +52,8 @@ module.exports = function(grunt) {
       },
       my_target: {
         files: {
-	  'min/canvas-grid-master.min.js': ['js/main.js',
+	  'min/canvas-grid-master.min.js': ['js/functions.js',
+               'js/main.js',
 	  					 'js/options.js',
 	  					 'js/trigger.js',
 	  					 'js/easing.js'],
