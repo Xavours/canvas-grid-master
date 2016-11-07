@@ -70,8 +70,24 @@
 		    starY: 0, //  TBD
 		    
 		    //  Event Options
-			onClickCallback: function() {console.log('click')},
-			mouseoverCallback: function(tile) {self.onMouseover(tile)}
+				// Mouse
+				onClickCallback: function() {console.log('click')},
+				mouseoverCallback: function(tile) {self.onMouseover(tile)},
+
+				// Gamepad
+				onPressButton1Callback: function() {},
+				onPressButton2Callback: function() {},
+				onPressButton3Callback: function() {},
+				onPressButton4Callback: function() {},
+
+				onPressDPadUpCallback: function() {},
+				onPressDPadDownCallback: function() {},
+				onPressDPadLeftCallback: function() {},
+				onPressDPadRightCallback: function() {},
+
+				onPressStartCallback: function() {},
+				onPressSelectCallback: function() {}			
+
 			}
 	    
 	    //  Get new settings
@@ -195,6 +211,8 @@
 		    $('#' + idParent).html('<canvas id="' + self.id + '" width="' + self.width + '" height="' + self.height + '">');
 		    canvas = document.getElementById( self.id );
 			ctx = canvas.getContext("2d");
+
+			this.setTrigger();
 	    }
 	    
 	    //  Events method to get Tile with coord (for example mouse)
@@ -310,17 +328,6 @@
 	    }
 
 	    //  Rendering methods
-	    this.drawDebug = function () {
-	    
-	    	ctx.fillStyle = "#FF0000";
-	    	ctx.fillRect(wall.current.positionX, wall.current.positionY, 100, 100);
-
-	    	ctx.fillStyle = "#FFFF00";
-	    	ctx.fillRect(wall.current.viewportX, wall.current.viewportY, 100, 100);
-
-	        
-	    }
-
 	    this.render = function () {
 	    
 	    	//  Update Data
@@ -332,7 +339,6 @@
 	        ctx.clearRect(0, 0, self.width, self.height);
 	        
 	        //  Chosse rendering mode
-	        //this.drawDebug();
 	        if (this.settings.content == 'image') this.drawImages();
 	        else if (this.settings.content == 'rectangle') this.drawRectangles();
 	        
@@ -406,6 +412,7 @@
 	        		//  Get the alpha
 	        		currentPoster.fade();
 	        		ctx.globalAlpha = currentPoster.color.alpha;
+	        	    if (currentPoster.focus == true) ctx.globalAlpha = 0.3;
 					
 					
 					if ( j < 1 ) {
@@ -523,6 +530,7 @@ function Poster() {
 	this.alphaDelta;
 	this.rgba;
 	this.hovered = false;
+	this.focus = false;
 	
 	//  Determine what is the level of fade of the tile
 	this.calculAlpha = function () {
