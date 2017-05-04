@@ -46,7 +46,7 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 	    	startWheel = new Date();
 	    	diffWheel = (startWheel- lastWheel) / 1000;
 
-	    console.log(delta);
+	    //console.log(delta);
 
 	    wall.goScale(delta);
 	}
