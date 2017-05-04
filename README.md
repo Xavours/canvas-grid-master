@@ -6,15 +6,11 @@ Work in progress. Will be probably released in November 2015.
 
 ## To Do :
 
-### Features
-* Optimize draw function
-* Different mode to spread the tile (pattern mode, limited continuous image)
-* Add method for basics events (click, hover etc.)
-
-
-### Nice to have
-* Add easing when the viewport moves
-
+### New Features added
+* Easing
+* Custom Events
+* Gamepad support
+* GrayScale Mode (slow down the whole thing though)
 
 ### Fix
 * Scale fom the center of the screen
