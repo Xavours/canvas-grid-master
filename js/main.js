@@ -1,8 +1,11 @@
 (function() {
 	// requestAnimationFrame polyfill by Erik Möller
 	// fixes from Paul Irish and Tino Zijdel
+	// Pause and Start added by Xavier Orssaud
 	var lastTime = 0;
 	var vendors = ['ms', 'moz', 'webkit', 'o'];
+	var RAFisPaused = false;
+
 	for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
 		window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
 		window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame']
@@ -23,7 +26,19 @@
 		window.cancelAnimationFrame = function(id) { 
 			clearTimeout(id);
 		};
+
 }());
+
+// Pause and Start added by Xavier Orssaud
+	
+	var request;	// to store the request
+	function startRaf(cb) {
+		request = requestAnimationFrame(cb);
+	}
+
+	function pauseRaf() {
+		cancelAnimationFrame(request);
+	}
 
 //  Class Wall
 	var canvas, ctx;

@@ -32,7 +32,7 @@
 		<script>
 			
 			for ( var i=0; i <= 32; i++) {
-				$('body').append('<img src="images/' + i + '.jpg" alt="" class="library" />');
+				$('body').append('<img src="images/girlz/' + i + '.jpg" alt="" class="library" />');
 			}
 			
 		</script>
@@ -63,7 +63,7 @@
 			    					tileWidth: 300,
 			    					tileHeight: 400,
 			    					content: 'image',
-			    					controller: 'gamepad',
+			    					controller: 'mouse',
 			    					moveStep: 10,
 			    					scaleOn: true,
 			    					scale: 1,
@@ -77,15 +77,17 @@
 		    					});
 		    generate(posters);
 		    wall.create();
+
+		    // requestAnimationFrame
 		    
 		    function update() { 
 				wall.render(posters);
 				
-				requestAnimationFrame(update);
+				startRaf(update);
 			}
 			
-			requestAnimationFrame(update);
-	
+			startRaf(update);
+
 	    </script>
 	    
 	</body>

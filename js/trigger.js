@@ -38,7 +38,7 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 	}
 	
 	//  Work around because of Firefox / IE / opera
-	function applyWheel(e, target){
+	function applyWheel(e){
 	    var evt = window.event || e 									//equalize event object
 	    var delta = evt.detail? evt.detail*(-120) : evt.wheelDelta 		//check for detail first so Opera uses that instead of wheelDelta
 	    
@@ -46,7 +46,9 @@ eventHandler.on("panleft panright panup pandown tap press pinch rotate", functio
 	    	startWheel = new Date();
 	    	diffWheel = (startWheel- lastWheel) / 1000;
 
-	    target.goScale(delta);
+	    console.log(delta);
+
+	    wall.goScale(delta);
 	}
 
 
