@@ -32,7 +32,11 @@
 		<script>
 			
 			for ( var i=0; i <= 32; i++) {
-				$('body').append('<img src="images/girlz/' + i + '.jpg" alt="" class="library" />');
+				var img = document.createElement("img");
+				img.src = 'images/girlz/' + i + '.jpg';
+				img.setAttribute("class", "library");
+				document.body.appendChild(img);
+				// $('body').append('<img src="images/girlz/' + i + '.jpg" alt="" class="library" />');
 			}
 			
 		</script>
@@ -50,8 +54,8 @@
 	    
 	    <script type="text/javascript">
 	    
-		    var library = $('.library');
-			
+		    // var library = $('.library');
+			var library = document.getElementsByClassName('library');
 			
 		
 		    //  Init
@@ -60,10 +64,11 @@
 		    					'viewport',
 		    					posters,
 		    					options = {
+		    						libraryName: 'library',
 			    					tileWidth: 300,
 			    					tileHeight: 400,
 			    					content: 'image',
-			    					grayScaleOn: true,
+			    					grayScaleOn: false ,
 			    					controller: 'mouse',
 			    					moveStep: 10,
 			    					scaleOn: true,

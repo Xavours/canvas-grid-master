@@ -55,11 +55,13 @@ var lastTileHovered = {};
 		this.source = array;
 		this.width = window.innerWidth;
 		this.height = window.innerHeight;
+		this.library = [];
 		
 		//  Default settings
 		this.settings = {
 			
 			// Main options
+			libraryName: 'library',
 			tileWidth: 300,
 			tileHeight: 400,
 			content: 'rectangle',
@@ -107,7 +109,12 @@ var lastTileHovered = {};
 			}
 			
 		//  Get new settings
-		params && validOptions(params)?$.extend( this.settings, params ):console.error('Some options are not valid');
+		if ( params && validOptions(params) ) {
+			$.extend( this.settings, params );
+			this.library = window[this.settings.libraryName];
+		} else {
+			console.error('The wall cannot be loaded because some options are not valid')
+		}
 		
 		this.updateNumberTile = function () {
 			this.numberRow = Math.ceil(this.width / this.factorWidth) + 1,
@@ -536,22 +543,22 @@ function Poster() {
 	
 	//  Apply Spread Mode
 	if (wall.settings.spreadMode == 'random') {
-		this.imgSrc = library[randomPick(0, library.length)].src;
+		this.imgSrc = wall.library[randomPick(0, wall.library.length)].src;
 	} else if (wall.settings.spreadMode == 'shuffle') {
-		if (shuffleCounter < library.length) {
-			this.imgSrc = library[shuffleCounter].src;
+		if (shuffleCounter < wall.library.length) {
+			this.imgSrc = wall.library[shuffleCounter].src;
 			
 			//  Custom for flyposter.ca
-			this.index = parseInt(library[shuffleCounter].id);
+			this.index = parseInt(wall.library[shuffleCounter].id);
 		} else {
-			shuffle(library);
+			shuffle(wall.library);
 			shuffleCounter = 0;
 			
 			//  Custom for flyposter.ca
-			this.index = parseInt(library[shuffleCounter].id);
+			this.index = parseInt(wall.library[shuffleCounter].id);
 		}
 		
-		this.imgSrc = library[shuffleCounter].src;
+		this.imgSrc = wall.library[shuffleCounter].src;
 		shuffleCounter++;
 	//console.log(shuffleCounter);
 };
@@ -634,7 +641,7 @@ this.focus = false;
 //  Generate array
 function generate(array) {
 
-	shuffle(library);
+	shuffle(wall.library);
 	for (var i = 0; i < wall.settings.numberTile; i++) {
 		var col = [];
 		for (var j = 0; j < wall.settings.numberTile; j++) {
