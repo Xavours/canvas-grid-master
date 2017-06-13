@@ -39,8 +39,7 @@ module.exports = function(grunt) {
 				files: ['**/*.scss', '**/*.js', 'gruntfile.js'],
 				tasks: ['build'],
 				options: {
-					spawn: false,
-					livereload: 8888,
+					livereload: false,
 				},
 			},
 		},
