@@ -85,13 +85,21 @@ startX: 0, //  TBD
 starY: 0, //  TBD
 
 
-## Done recently
+## Projects using Canvas Grid Master
 
-### New Features added
-* Easing
-* Custom Events
-* Gamepad support
-* GrayScale Mode (slow down the whole thing though)
+- Flyposter: http://www.flyposter.ca
+- Others?
 
-### Fixed
-* Scale fom the center of the screen
+
+## Release History
+
+```
+v0.5
+- New Features added
+  * Easing
+  * Custom Events
+  * Gamepad support
+  * GrayScale Mode (slow down the whole thing though)
+
+- Fixed
+  * Scale fom the center of the screen
