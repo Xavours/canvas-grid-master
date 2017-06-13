@@ -13,6 +13,13 @@ More to Come
 
 ### Arguments
 
+### Example
+```javascript
+<script type="text/javascript">
+  var wall = new Wall('canvas','viewport', array});
+</script>
+```
+
 ## Options
 
 More to come
@@ -27,17 +34,3 @@ More to come
 
 ### Fixed
 * Scale fom the center of the screen
-
-
-## Documentation
-Documentation to come.
-
-### Initializing
-```javascript
-<script type="text/javascript">
-  var wall = new Wall('canvas','viewport', array});
-</script>
-```
-
-
-### Options
