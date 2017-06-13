@@ -3,9 +3,11 @@
 Canvas-grid-master is an endless grid in canvas to browse a bunch of images.
 Work in progress.
 
+
 ## What does it do ?
 
 Canvas-grid-master creates a canvas showinf an endless grid of pictures randomly picked up from an HTMLcollection of image objects. The grid has a lot of customizable settings (see options)
+
 
 ## Getting Started
 
@@ -20,20 +22,21 @@ More to Come
 </script>
 ```
 
+
 ## Options
 
 You can tweak how **Canvas Grid Master** playing with the various number of settings :
 
 ### Main options
 
-#### idWrapper
+#### `idWrapper`
 
-#### libraryName
+#### `libraryName`
 
-#### tileWidth
+#### `tileWidth`
 Must be a number
 
-#### tileHeight
+#### `tileHeight`
 Muste be a number
 
 #### content
@@ -79,6 +82,7 @@ random
 ### Render Options
 startX: 0, //  TBD
 starY: 0, //  TBD
+
 
 ## Done recently
 
