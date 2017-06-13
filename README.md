@@ -1,10 +1,23 @@
 # canvas-grid-master
 
-Canvas-grid-master is an endless grid in canvas to browse a bunch of images stored in a folder.
-Work in progress. Will be probably released in November 2015.
+Canvas-grid-master is an endless grid in canvas to browse a bunch of images.
+Work in progress.
 
+## What does it do ?
 
-## To Do :
+Canvas-grid-master creates a canvas showinf an endless grid of pictures randomly picked up from an HTMLcollection of image objects. The grid has a lot of customizable settings (see options)
+
+## Installation
+
+More to Come
+
+### Arguments
+
+## Options
+
+More to come
+
+## Done recently
 
 ### New Features added
 * Easing
@@ -12,7 +25,7 @@ Work in progress. Will be probably released in November 2015.
 * Gamepad support
 * GrayScale Mode (slow down the whole thing though)
 
-### Fix
+### Fixed
 * Scale fom the center of the screen
 
 
