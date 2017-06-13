@@ -1,12 +1,12 @@
 # canvas-grid-master
 
-Canvas-grid-master is an endless grid in canvas to browse a bunch of images.
+**Canvas-grid-master** is an endless grid in canvas to browse a bunch of images.
 Work in progress.
 
 
 ## What does it do ?
 
-Canvas-grid-master creates a canvas showinf an endless grid of pictures randomly picked up from an HTMLcollection of image objects. The grid has a lot of customizable settings (see options)
+**Canvas-grid-master** creates a canvas showinf an endless grid of pictures randomly picked up from an HTMLcollection of image objects. The grid has a lot of customizable settings (see options)
 
 
 ## Getting Started
@@ -39,44 +39,45 @@ Must be a number
 #### `tileHeight`
 Muste be a number
 
-#### content
+#### `content`
 Rectangles or images
 
-#### grayScaleOn
+#### `grayScaleOn`
 True or false
 
-#### fadeAnimation
+#### `fadeAnimation`
 
 ### Controller options
 
-#### controller
+#### `controller`
 'mouse' 'gamepad' or 'keyboard'
 
-#### moveStep
+#### `moveStep`
 Must be a number
 
 ### Scale options
 
-#### scaleOn
+#### `scaleOn`
 True or false
 
-#### scale
+#### `scale`
 Must be a number. Scale factor
 
-#### minScale
+#### `minScale`
 0.25,
 
-#### maxScale
+#### `maxScale`
 1.75,
 
-#### scaleSensitivity
+#### `scaleSensitivity`
 1
 
 ### Spread options
-#### spreadMode
+
+#### `spreadMode`
 random
 
-#### numberTile
+#### `numberTile`
 100
 
 ### Render Options
