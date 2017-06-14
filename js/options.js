@@ -19,22 +19,8 @@ function validOptions(param){
 	
 	//  Check if properties one by one
 
-		console.log(param);
-		console.log( window[param.libraryName] );
-
-		// Mandatory options
-		// if ( param.hasOwnProperty('libraryName') ) {
-		// 	if( Object.toType(param.libraryName) !== 'string'){
-		// 		console.error('The option "libraryName" must be string');
-		// 		valid = false;
-		// 	} else if ( Object.toType( window[param.libraryName] ) !== 'htmlcollection' ) {
-		// 			console.error('The option "libraryName" does not designed an HTMLcollection. It must designed a valid HTMLcollection containing image objects.');
-		// 			valid = false;
-		// 	} else if (typeof window[param.libraryName] == 'undefined' || window[param.libraryName].length == 0) {
-		// 		console.error('The wall cannot be loaded cause the library designed by libraryName is empty or undefined. The library must be a valid HTMLcollection containing image objects.');
-		// 		valid = false;
-		// 	}
-		// }
+		//console.log(param);
+		//console.log( window[param.libraryName] );
 		
 		//  Main options
 		if ( param.hasOwnProperty('wrapper') ) {
