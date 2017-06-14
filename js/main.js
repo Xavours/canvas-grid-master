@@ -1,45 +1,3 @@
-(function() {
-	// requestAnimationFrame polyfill by Erik Möller
-	// fixes from Paul Irish and Tino Zijdel
-	// Pause and Start added by Xavier Orssaud
-	var lastTime = 0;
-	var vendors = ['ms', 'moz', 'webkit', 'o'];
-	var RAFisPaused = false;
-
-	for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-		window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
-		window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame']
-		|| window[vendors[x]+'CancelRequestAnimationFrame'];
-	}
-	
-	if (!window.requestAnimationFrame)
-		window.requestAnimationFrame = function(callback, element) {
-			var currTime = new Date().getTime();
-			var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-			var id = window.setTimeout(function() { callback(currTime + timeToCall); },
-				timeToCall);
-			lastTime = currTime + timeToCall;
-			return id;
-		};
-		
-		if (!window.cancelAnimationFrame)
-			window.cancelAnimationFrame = function(id) { 
-				clearTimeout(id);
-			};
-
-		}());
-
-// Pause and Start added by Xavier Orssaud
-
-	var request;	// to store the request
-	function startRaf(cb) {
-		request = requestAnimationFrame(cb);
-	}
-
-	function pauseRaf() {
-		cancelAnimationFrame(request);
-	}
-
 //  Class Wall
 var canvas, ctx;
 var lastTileHovered = {};
@@ -48,10 +6,9 @@ var lastTileHovered = {};
 	var lastOffsetX = 1;
 	var lastPositionX = 1;
 
-	function Wall(id, idParent, array, params) {
+	function Wall(id, wrapper, array, params) {
 		var self = this;
 		this.id = id;
-		this.idParent = idParent;
 		this.source = array;
 		this.width = window.innerWidth;
 		this.height = window.innerHeight;
@@ -61,7 +18,7 @@ var lastTileHovered = {};
 		this.settings = {
 			
 			// Main options
-			libraryName: 'library',
+			idWrapper: 'viewport',
 			tileWidth: 300,
 			tileHeight: 400,
 			content: 'rectangle',
@@ -107,11 +64,21 @@ var lastTileHovered = {};
 				onPressSelectCallback: function() {}			
 
 			}
-			
+		
+		//  Valid Arguments
+		if ( Object.toType( this.id ) !== 'string' ) {
+			console.error('Argument missing : id must be a string.');
+		}
+
+		if ( Object.toType( this.source ) !== 'htmlcollection' ) {
+			console.error('Argument missing : library must be an HTMLcollection containing image objects.');
+		} else if (typeof this.source == 'undefined' || this.source.length == 0) {
+			console.error('The wall cannot be loaded cause an argument is empty or undefined : library must be an HTMLcollection containing image objects.');
+		}
+
 		//  Get new settings
 		if ( params && validOptions(params) ) {
 			$.extend( this.settings, params );
-			this.library = window[this.settings.libraryName];
 		} else {
 			console.error('The wall cannot be loaded because some options are not valid')
 		}
@@ -185,8 +152,8 @@ var lastTileHovered = {};
 				}
 				
 				//console.log( finalX + ' / ' + finalY );
-
-				//return this.source[ (this.current.tileX + newX) % self.settings.numberTile ][ (this.current.tileY + newY) % self.settings.numberTile ]; 
+				
+				//return this.library[ (this.current.tileX + newX) % self.settings.numberTile ][ (this.current.tileY + newY) % self.settings.numberTile ]; 
 
 				
 			},
@@ -228,10 +195,29 @@ var lastTileHovered = {};
 			}
 			
 		}
-		
+
+		//  Initialization
+		this.init = function () {
+			this.generateLibrary();
+			this.create();
+		}
+
+		//  Generate array of array of Posters
+		this.generateLibrary = function () {
+			shuffle(this.source);
+			for (var i = 0; i < this.settings.numberTile; i++) {
+				var col = [];
+				for (var j = 0; j < this.settings.numberTile; j++) {
+					var poster = new Poster;
+					col.push(poster);
+				}
+				this.library.push(col);
+			}
+		}
+
 		//  Create or destroy the element "wall"
 		this.create = function () {
-			$('#' + idParent).html('<canvas id="' + self.id + '" width="' + self.width + '" height="' + self.height + '">');
+			$('#' + wrapper).html('<canvas id="' + self.id + '" width="' + self.width + '" height="' + self.height + '">');
 			canvas = document.getElementById( self.id );
 			ctx = canvas.getContext("2d");
 
@@ -253,7 +239,7 @@ var lastTileHovered = {};
 			}
 			
 			//console.log('x : ' + (this.current.tileX + newX) % self.settings.numberTile + '  /  y : ' + (this.current.tileY + newY) % self.settings.numberTile);
-			return this.source[ (this.current.tileX + newX) % self.settings.numberTile ][ (this.current.tileY + newY) % self.settings.numberTile ];
+			return this.library[ (this.current.tileX + newX) % self.settings.numberTile ][ (this.current.tileY + newY) % self.settings.numberTile ];
 		}
 
 		this.onClick = function (tile) {	    
@@ -276,7 +262,7 @@ var lastTileHovered = {};
 				
 			} else if ( tile.hovered !== lastTileHovered.hovered ) {
 				
-				// Restore the alpha of the last tile hovered
+				//  Restore the alpha of the last tile hovered
 				lastTileHovered.startTime = Date.now();
 				lastTileHovered.alphaEnd = self.current.tileHoveredAlpha;
 				lastTileHovered.alphaStart = lastTileHovered.color.alpha;
@@ -298,7 +284,7 @@ var lastTileHovered = {};
 				
 			}
 			
-			//this.settings.mouseoverCallback();  
+			//  this.settings.mouseoverCallback();  
 		}
 
 		this.tileBlink = function (tile) {	    
@@ -307,10 +293,11 @@ var lastTileHovered = {};
 
 		//  Viewport move methods
 		this.goScale = function (delta) {
-			// Zoom if the option scaleOn is true
+
+			//  Zoom if the option scaleOn is true
 			if (this.settings.scaleOn) {
 				
-				//Update Scale
+				//  Update Scale
 				if ( this.scale >= this.settings.minScale && this.scale <= this.settings.maxScale ) { 
 					
 					var lastScale = this.scale;
@@ -361,7 +348,7 @@ var lastTileHovered = {};
 			//  Clear canvas
 			ctx.clearRect(0, 0, self.width, self.height);
 			
-			//  Chosse rendering mode
+			//  Choose rendering mode
 			if (this.settings.content == 'image') this.drawImages();
 			if (this.settings.content == 'image' & this.settings.grayScaleOn) this.grayScale();
 			else if (this.settings.content == 'rectangle') this.drawRectangles();
@@ -375,11 +362,12 @@ var lastTileHovered = {};
 					var x = (this.current.tileX+i) % self.settings.numberTile;
 					var y = (this.current.tileY+j) % self.settings.numberTile;
 					var currentPoster = this.source[x][y];
+
 					//  Get the color of the rectangle
 					currentPoster.fade();
 					ctx.fillStyle = currentPoster.rgba;
 					
-					// Optimisations
+					//  Optimisations
 					var jTimesOffY = j*this.current.offsetY;
 					var factorOffsetLoopX = self.factorOffsetLoopX(i);
 					var factorOffsetLoopY = self.factorOffsetLoopY(j);
@@ -423,8 +411,8 @@ var lastTileHovered = {};
 					var x = (this.current.tileX+i) % self.settings.numberTile;
 					var y = (this.current.tileY+j) % self.settings.numberTile;
 					
-					//console.log(this.source);
-					var currentPoster = this.source[x][y];
+					//console.log(this.library);
+					var currentPoster = this.library[x][y];
 					
 					
 					//  Get the source of images
@@ -535,46 +523,40 @@ function Poster() {
 		green: randomPick(1, 255),
 		blue: randomPick(1, 255),
 		alpha: 0,
-		rgba: function(){
+		rgba: function() {
 			var c = self.color;
 			return [c.red, c.green, c.blue, c.alpha].join(",");
 		}
 	};
-	
+	this.width = 50;
+	this.height = 50;
+	this.inViewport_bl = false;
+	this.blacked_bl = true;
+	this.factor = 1;
+	this.alphaStart = 0;
+	this.alphaEnd = 1;
+	this.alphaComplete_bl = false;				
+	this.alphaDelta;
+	this.rgba;
+	this.hovered = false;
+	this.focus = false;
+
 	//  Apply Spread Mode
 	if (wall.settings.spreadMode == 'random') {
-		this.imgSrc = wall.library[randomPick(0, wall.library.length)].src;
+		this.imgSrc = wall.source[randomPick(0, wall.source.length)].src;
+
 	} else if (wall.settings.spreadMode == 'shuffle') {
-		if (shuffleCounter < wall.library.length) {
-			this.imgSrc = wall.library[shuffleCounter].src;
-			
-			//  Custom for flyposter.ca
-			this.index = parseInt(wall.library[shuffleCounter].id);
-		} else {
-			shuffle(wall.library);
+		if (shuffleCounter == wall.source.length) {
+			shuffle(wall.source);
 			shuffleCounter = 0;
-			
-			//  Custom for flyposter.ca
-			this.index = parseInt(wall.library[shuffleCounter].id);
 		}
 		
-		this.imgSrc = wall.library[shuffleCounter].src;
-		shuffleCounter++;
-	//console.log(shuffleCounter);
-};
+		if( Object.toType(this.addKeys) === 'function') this.addKeys();
+		this.imgSrc = wall.source[shuffleCounter].src;
 
-this.width = 50;
-this.height = 50;
-this.inViewport_bl = false;
-this.blacked_bl = true;
-this.factor = 1;
-this.alphaStart = 0;
-this.alphaEnd = 1;
-this.alphaComplete_bl = false;				
-this.alphaDelta;
-this.rgba;
-this.hovered = false;
-this.focus = false;
+		shuffleCounter++;
+		//console.log(shuffleCounter);
+	};
 
 	//  Determine what is the level of fade of the tile
 	this.calculAlpha = function () {
@@ -628,51 +610,8 @@ this.focus = false;
 		this.calculAlpha();
 		this.rgba = "rgba(" + this.color.rgba() + ")";
 		
-		//  If other case throw error
-		}/*
- else {
-			console.error( "FADE PROBLEM" );
 		}
-		*/
-		
 	}
-}
-
-//  Generate array
-function generate(array) {
-
-	shuffle(wall.library);
-	for (var i = 0; i < wall.settings.numberTile; i++) {
-		var col = [];
-		for (var j = 0; j < wall.settings.numberTile; j++) {
-			var poster = new Poster;
-			col.push(poster);
-		}
-		array.push(col);
-	}
-}
-
-//  Pick random number
-function randomPick(min, max) {
-	return Math.floor(Math.random() * max) + min;
-}
-
-//  Return true if even number
-function isEven(n) {
-	return n == parseFloat(n) && !(n % 2);
-}
-
-//  Text for debugging
-function text(indiceX, indiceY, x, y) {
-	ctx.font="18px Arial";
-	ctx.fillStyle = "black";
-	ctx.fillText(indiceX + ' / ' + indiceY, x, y);
-}
-
-// Shuffle
-function shuffle(o) {
-	for (var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
-		return o;
 }
 
 //  Calculate FPS

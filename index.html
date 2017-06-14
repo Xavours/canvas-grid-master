@@ -31,12 +31,11 @@
 		
 		<script>
 			
-			for ( var i=0; i <= 32; i++) {
+			for ( var i=0; i <= 2; i++) {
 				var img = document.createElement("img");
 				img.src = 'images/girlz/' + i + '.jpg';
 				img.setAttribute("class", "library");
 				document.body.appendChild(img);
-				// $('body').append('<img src="images/girlz/' + i + '.jpg" alt="" class="library" />');
 			}
 			
 		</script>
@@ -56,15 +55,13 @@
 	    
 		    // var library = $('.library');
 			var library = document.getElementsByClassName('library');
-			
 		
 		    //  Init
 		    var posters = [];
 		    var wall = new Wall('canvas',
 		    					'viewport',
-		    					posters,
+		    					library,
 		    					options = {
-		    						libraryName: 'library',
 			    					tileWidth: 300,
 			    					tileHeight: 400,
 			    					content: 'image',
@@ -81,8 +78,7 @@
 		    							win.focus();
 		    						}
 		    					});
-		    generate(posters);
-		    wall.create();
+		    wall.init();
 
 		    // requestAnimationFrame
 		    
