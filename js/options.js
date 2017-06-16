@@ -23,13 +23,6 @@ function validOptions(param){
 		//console.log( window[param.libraryName] );
 		
 		//  Main options
-		if ( param.hasOwnProperty('wrapper') ) {
-			if( Object.toType(param.content) !== 'string'){
-				console.error('The option "wrapper" must be a string');
-				valid = false;
-			}
-		}
-
 		if ( param.hasOwnProperty('tileWidth') ) {
 			if( Object.toType(param.tileWidth) !== 'number'){
 				console.error('The option "tileWidth" must be a number');

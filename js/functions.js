@@ -35,7 +35,7 @@ REQUEST ANIMATION FRAME
 	// Pause and Start added by Xavier Orssaud
 	var request;	// to store the request
 
-	function startRaf(cb) {
+	function playRaf(cb) {
 		request = requestAnimationFrame(cb);
 	}
 

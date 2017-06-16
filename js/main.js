@@ -9,6 +9,7 @@ var lastTileHovered = {};
 	function Wall(id, wrapper, array, params) {
 		var self = this;
 		this.id = id;
+		this.wrapper = wrapper;
 		this.source = array;
 		this.width = window.innerWidth;
 		this.height = window.innerHeight;
@@ -18,7 +19,6 @@ var lastTileHovered = {};
 		this.settings = {
 			
 			// Main options
-			idWrapper: 'viewport',
 			tileWidth: 300,
 			tileHeight: 400,
 			content: 'rectangle',
@@ -70,6 +70,12 @@ var lastTileHovered = {};
 			console.error('Argument missing : id must be a string.');
 		}
 
+		if ( Object.toType( this.wrapper ) !== 'string' ) {
+			if( Object.toType(param.content) !== 'string'){
+				console.error('Argument missing : wrapper must be a string.');
+			}
+		}
+
 		if ( Object.toType( this.source ) !== 'htmlcollection' ) {
 			console.error('Argument missing : library must be an HTMLcollection containing image objects.');
 		} else if (typeof this.source == 'undefined' || this.source.length == 0) {
@@ -84,32 +90,32 @@ var lastTileHovered = {};
 		}
 		
 		this.updateNumberTile = function () {
-			this.numberRow = Math.ceil(this.width / this.factorWidth) + 1,
-			this.numberCol = Math.ceil(this.height / this.factorHeight) + 1
+			self.numberRow = Math.ceil(self.width / self.factorWidth) + 1,
+			self.numberCol = Math.ceil(self.height / self.factorHeight) + 1
 		}
 		
 		//  Calculate FPS to change animation time according to FPS
 		this.FPS = 60;
 		this.updateFPS = function () {
-			this.FPS = fps.getFPS();
+			self.FPS = fps.getFPS();
 		}
 		
 		//  Handle the change of scale
 		this.scale = this.settings.scale;
 		this.updateScale = function () {
-			this.factorWidth = this.settings.tileWidth * this.scale;
-			this.factorHeight = this.settings.tileHeight * this.scale;
+			self.factorWidth = self.settings.tileWidth * self.scale;
+			self.factorHeight = self.settings.tileHeight * self.scale;
 			
 			//  virtualWidth and virtualHeight represent the quantity of pixels that fits on the wall considering the scale.
 			//  For example if the wall has a width of 100px and the scale is 1.5, this 100px represent 150px. It is stored in the current object.
-			this.current.virtualWidth = this.width / this.scale;
-			this.current.virtualHeight = this.height / this.scale;
+			self.current.virtualWidth = self.width / self.scale;
+			self.current.virtualHeight = self.height / self.scale;
 		}
 		
 		//  Take care of the viewport = "what appears on the window"
 		this.updateSizeViewport = function () {
-			this.width = canvas.width = window.innerWidth;
-			this.height = canvas.height = window.innerHeight;
+			self.width = canvas.width = window.innerWidth;
+			self.height = canvas.height = window.innerHeight;
 			
 		}
 		
@@ -198,52 +204,67 @@ var lastTileHovered = {};
 
 		//  Initialization
 		this.init = function () {
-			this.generateLibrary();
-			this.create();
+			self.generateLibrary();
+			self.create();
+			self.play();
 		}
 
 		//  Generate array of array of Posters
 		this.generateLibrary = function () {
-			shuffle(this.source);
-			for (var i = 0; i < this.settings.numberTile; i++) {
+			shuffle(self.source);
+			for (var i = 0; i < self.settings.numberTile; i++) {
 				var col = [];
-				for (var j = 0; j < this.settings.numberTile; j++) {
+				for (var j = 0; j < self.settings.numberTile; j++) {
 					var poster = new Poster;
 					col.push(poster);
 				}
-				this.library.push(col);
+				self.library.push(col);
 			}
 		}
 
 		//  Create or destroy the element "wall"
 		this.create = function () {
-			$('#' + wrapper).html('<canvas id="' + self.id + '" width="' + self.width + '" height="' + self.height + '">');
+			$('#' + self.wrapper ).html('<canvas id="' + self.id + '" width="' + self.width + '" height="' + self.height + '">');
 			canvas = document.getElementById( self.id );
 			ctx = canvas.getContext("2d");
 
-			this.setTrigger();
+			self.setTrigger();
+		}
+
+		this.destroy = function () {
+			$('#' + self.wrapper ).html('');
+		}
+
+		//  Play / Pause rendering
+		this.play = function () {
+			self.render();	
+			playRaf(self.play);
+		}
+
+		this.pause = function () {
+			cancelAnimationFrame(request);
 		}
 		
 		//  Events method to get Tile with coord (for example mouse)
 		this.getTile = function (x, y) {
-			var tempX = x - this.current.offsetX,
-			tempY = y - this.current.offsetY,
+			var tempX = x - self.current.offsetX,
+			tempY = y - self.current.offsetY,
 			newX = 0,
 			newY = 0;
 			
 			if (tempX >= 0) {
-				newX = Math.floor( tempX / this.factorWidth + 1 );
+				newX = Math.floor( tempX / self.factorWidth + 1 );
 			}
 			if (tempY >= 0) {
-				newY = Math.floor( tempY / this.factorHeight + 1 );
+				newY = Math.floor( tempY / self.factorHeight + 1 );
 			}
 			
 			//console.log('x : ' + (this.current.tileX + newX) % self.settings.numberTile + '  /  y : ' + (this.current.tileY + newY) % self.settings.numberTile);
-			return this.library[ (this.current.tileX + newX) % self.settings.numberTile ][ (this.current.tileY + newY) % self.settings.numberTile ];
+			return self.library[ (self.current.tileX + newX) % self.settings.numberTile ][ (self.current.tileY + newY) % self.settings.numberTile ];
 		}
 
 		this.onClick = function (tile) {	    
-			this.settings.onClickCallback(tile);
+			self.settings.onClickCallback(tile);
 		}
 		
 		this.onMouseover = function (tile) {
@@ -288,39 +309,39 @@ var lastTileHovered = {};
 		}
 
 		this.tileBlink = function (tile) {	    
-			this.settings.onClickCallback(tile);
+			self.settings.onClickCallback(tile);
 		}
 
 		//  Viewport move methods
 		this.goScale = function (delta) {
 
 			//  Zoom if the option scaleOn is true
-			if (this.settings.scaleOn) {
+			if (self.settings.scaleOn) {
 				
 				//  Update Scale
-				if ( this.scale >= this.settings.minScale && this.scale <= this.settings.maxScale ) { 
+				if ( self.scale >= self.settings.minScale && self.scale <= self.settings.maxScale ) { 
 					
-					var lastScale = this.scale;
-					this.scale += (delta/2000);
-					var diffScale = this.scale - lastScale;
+					var lastScale = self.scale;
+					self.scale += (delta/2000);
+					var diffScale = self.scale - lastScale;
 					
-					if (this.scale < this.settings.minScale) {
-						this.scale = this.settings.minScale;
-					} else if (this.scale > this.settings.maxScale) {
-						this.scale = this.settings.maxScale;
+					if (self.scale < self.settings.minScale) {
+						self.scale = self.settings.minScale;
+					} else if (self.scale > self.settings.maxScale) {
+						self.scale = self.settings.maxScale;
 					} else {
 						
 						//  Correct position of viewport to have the feeling that it zooms in the center of the screen
 						
 							//  Warning : diffScale can be bigger than (maxScale - lastScale) or (lastScale - minScale)
-							if ( diffScale > (this.settings.maxScale - lastScale) ) diffscale = this.settings.maxScale - lastScale;
-							if ( diffScale > (lastScale - this.settings.minScale) ) diffscale = lastScale - this.settings.minScale;
+							if ( diffScale > (self.settings.maxScale - lastScale) ) diffscale = self.settings.maxScale - lastScale;
+							if ( diffScale > (lastScale - self.settings.minScale) ) diffscale = lastScale - self.settings.minScale;
 							
-							var correctionX = diffScale * (this.current.viewportX + this.width / 2);
-							var correctionY = diffScale * (this.current.viewportY + this.height / 2);
+							var correctionX = diffScale * (self.current.viewportX + self.width / 2);
+							var correctionY = diffScale * (self.current.viewportY + self.height / 2);
 							
-							this.current.positionX += correctionX;
-							this.current.positionY += correctionY;
+							self.current.positionX += correctionX;
+							self.current.positionY += correctionY;
 						}
 					}
 				}
@@ -329,29 +350,29 @@ var lastTileHovered = {};
 			this.goTranslate = function (deltaX, deltaY) {
 
 			//  Update PositionX
-			this.current.positionX += deltaX;
-			this.current.positionY += deltaY;
+			self.current.positionX += deltaX;
+			self.current.positionY += deltaY;
 			
 			//  Update ViewportX
-			this.current.viewportX += deltaX / this.scale;
-			this.current.viewportY += deltaY / this.scale;
+			self.current.viewportX += deltaX / self.scale;
+			self.current.viewportY += deltaY / self.scale;
 		}
 
 		//  Rendering methods
 		this.render = function () {
 			
 			//  Update Data
-			this.updateScale();
-			this.updateNumberTile();
-			this.current.getTile(this.current.positionX, this.current.positionY)
+			self.updateScale();
+			self.updateNumberTile();
+			self.current.getTile(self.current.positionX, self.current.positionY)
 			
 			//  Clear canvas
 			ctx.clearRect(0, 0, self.width, self.height);
 			
 			//  Choose rendering mode
-			if (this.settings.content == 'image') this.drawImages();
-			if (this.settings.content == 'image' & this.settings.grayScaleOn) this.grayScale();
-			else if (this.settings.content == 'rectangle') this.drawRectangles();
+			if (self.settings.content == 'image') self.drawImages();
+			if (self.settings.content == 'image' & self.settings.grayScaleOn) self.grayScale();
+			else if (self.settings.content == 'rectangle') self.drawRectangles();
 			
 		}
 		
@@ -359,30 +380,30 @@ var lastTileHovered = {};
 			for (var i = 0; i < self.numberRow; i++) {
 				for (var j = 0; j < self.numberCol; j++) {
 					
-					var x = (this.current.tileX+i) % self.settings.numberTile;
-					var y = (this.current.tileY+j) % self.settings.numberTile;
-					var currentPoster = this.source[x][y];
+					var x = (self.current.tileX+i) % self.settings.numberTile;
+					var y = (self.current.tileY+j) % self.settings.numberTile;
+					var currentPoster = self.source[x][y];
 
 					//  Get the color of the rectangle
 					currentPoster.fade();
 					ctx.fillStyle = currentPoster.rgba;
 					
 					//  Optimisations
-					var jTimesOffY = j*this.current.offsetY;
+					var jTimesOffY = j*self.current.offsetY;
 					var factorOffsetLoopX = self.factorOffsetLoopX(i);
 					var factorOffsetLoopY = self.factorOffsetLoopY(j);
 					
 					
 					if ( i <1) {
-						var iTimeOffX = i*this.current.offsetX;
+						var iTimeOffX = i*self.current.offsetX;
 						
 						if ( j <1) {		        	
-							ctx.fillRect(iTimeOffX, jTimesOffY, this.current.offsetX, this.current.offsetY);
+							ctx.fillRect(iTimeOffX, jTimesOffY, self.current.offsetX, self.current.offsetY);
 							
 							text(x, y, 20, 20);
 							
 						} else {
-							ctx.fillRect(iTimeOffX, factorOffsetLoopY, this.current.offsetX, this.factorHeight);
+							ctx.fillRect(iTimeOffX, factorOffsetLoopY, self.current.offsetX, self.factorHeight);
 							
 							text(x, y, iTimeOffX + 20, factorOffsetLoopY + 20);
 						}
@@ -390,11 +411,11 @@ var lastTileHovered = {};
 					} else {
 						
 						if ( j <1) {
-							ctx.fillRect(factorOffsetLoopX, jTimesOffY, this.factorWidth, this.current.offsetY);
+							ctx.fillRect(factorOffsetLoopX, jTimesOffY, self.factorWidth, self.current.offsetY);
 							
 							text(x, y, factorOffsetLoopX + 20, jTimesOffY + 20);
 						} else {
-							ctx.fillRect(factorOffsetLoopX, factorOffsetLoopY, this.factorWidth, this.factorHeight);
+							ctx.fillRect(factorOffsetLoopX, factorOffsetLoopY, self.factorWidth, self.factorHeight);
 							
 							text(x, y, factorOffsetLoopX + 20, factorOffsetLoopY + 20);
 						}					
@@ -408,11 +429,11 @@ var lastTileHovered = {};
 			for (var i = 0; i <self.numberRow; i++) {
 				for (var j = 0; j <self.numberCol; j++) {
 					
-					var x = (this.current.tileX+i) % self.settings.numberTile;
-					var y = (this.current.tileY+j) % self.settings.numberTile;
+					var x = (self.current.tileX+i) % self.settings.numberTile;
+					var y = (self.current.tileY+j) % self.settings.numberTile;
 					
 					//console.log(this.library);
-					var currentPoster = this.library[x][y];
+					var currentPoster = self.library[x][y];
 					
 					
 					//  Get the source of images
@@ -428,34 +449,34 @@ var lastTileHovered = {};
 					
 					
 					if ( j < 1 ) {
-						var scaleDivideOffY = this.current.offsetY/this.scale
-						var tileHeightMinusOff = this.settings.tileHeight - scaleDivideOffY;
+						var scaleDivideOffY = self.current.offsetY/self.scale
+						var tileHeightMinusOff = self.settings.tileHeight - scaleDivideOffY;
 					}
 					
 					if ( i < 1 ) {
-						var scaleDivideOffX = this.current.offsetX/this.scale;
-						var tileWidthMinusOff = this.settings.tileWidth - scaleDivideOffX;
+						var scaleDivideOffX = self.current.offsetX/self.scale;
+						var tileWidthMinusOff = self.settings.tileWidth - scaleDivideOffX;
 						if ( j < 1 ) {        		
 							ctx.drawImage(img, 
 								tileWidthMinusOff, 
 								tileHeightMinusOff, 
 								scaleDivideOffX, 
 								scaleDivideOffY, 
-								i*this.current.offsetX, 
-								j*this.current.offsetY, 
-								this.current.offsetX, 
-								this.current.offsetY);
+								i*self.current.offsetX, 
+								j*self.current.offsetY, 
+								self.current.offsetX, 
+								self.current.offsetY);
 						} else {
 							
 							ctx.drawImage(img, 
 								tileWidthMinusOff, 
 								0, 
 								scaleDivideOffX, 
-								this.settings.tileHeight, 
-								i*this.current.offsetX, 
-								this.factorOffsetLoopY(j), 
-								this.current.offsetX, 
-								this.factorHeight);
+								self.settings.tileHeight, 
+								i*self.current.offsetX, 
+								self.factorOffsetLoopY(j), 
+								self.current.offsetX, 
+								self.factorHeight);
 						}
 						
 					} else {
@@ -463,20 +484,20 @@ var lastTileHovered = {};
 						if ( j < 1 ) {
 							ctx.drawImage(img, 0, 
 								tileHeightMinusOff, 
-								this.settings.tileWidth, 
+								self.settings.tileWidth, 
 								scaleDivideOffY, 
-								this.factorOffsetLoopX(i), 
-								j*this.current.offsetY, 
-								this.factorWidth, 
-								this.current.offsetY);
+								self.factorOffsetLoopX(i), 
+								j*self.current.offsetY, 
+								self.factorWidth, 
+								self.current.offsetY);
 						} else {
 							ctx.drawImage(img, 0, 0, 
-								this.settings.tileWidth, 
-								this.settings.tileHeight, 
-								this.factorOffsetLoopX(i), 
-								this.factorOffsetLoopY(j), 
-								this.factorWidth, 
-								this.factorHeight)
+								self.settings.tileWidth, 
+								self.settings.tileHeight, 
+								self.factorOffsetLoopX(i), 
+								self.factorOffsetLoopY(j), 
+								self.factorWidth, 
+								self.factorHeight)
 						}
 					}
 				}
@@ -486,7 +507,7 @@ var lastTileHovered = {};
 		this.grayScale = function () {
 			
 			// Store the data
-			this.imageData = ctx.getImageData(0, 0, this.width, this.height);
+			this.imageData = ctx.getImageData(0, 0, self.width, self.height);
 			var data = this.imageData.data;
 
 			for(var i = 0; i < data.length; i += 4) {
@@ -504,11 +525,11 @@ var lastTileHovered = {};
 		}
 		
 		this.factorOffsetLoopX = function(i){
-			return this.current.offsetX + (i-1)*this.factorWidth;
+			return self.current.offsetX + (i-1)*self.factorWidth;
 		}
 		
 		this.factorOffsetLoopY = function(j){
-			return this.current.offsetY + (j-1)*this.factorHeight;
+			return self.current.offsetY + (j-1)*self.factorHeight;
 		}
 	}
 

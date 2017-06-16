@@ -31,7 +31,7 @@
 		
 		<script>
 			
-			for ( var i=0; i <= 2; i++) {
+			for ( var i=0; i <= 32; i++) {
 				var img = document.createElement("img");
 				img.src = 'images/girlz/' + i + '.jpg';
 				img.setAttribute("class", "library");
@@ -42,8 +42,7 @@
 		
 		<div id='viewport'></div>
 	    
-<!-- 	    <script src='min/canvas-grid-master.min.js' type="text/javascript"></script> -->
-	    
+		<!-- <script src='min/canvas-grid-master.min.js' type="text/javascript"></script> -->	    
 	    <script src='js/functions.js' type="text/javascript"></script>
 	    <script src='js/main.js' type="text/javascript"></script>
 	    <script src='js/trigger.js' type="text/javascript"></script>
@@ -72,7 +71,7 @@
 			    					scale: 1,
 			    					minScale: 0.15,
 			    					masScale: 1.85,
-			    					spreadMode: 'shuffle',
+			    					spreadMode: 'random',
 									onClickCallback: function(tile) {
 		    							var win = window.open(tile.imgSrc, '_blank');
 		    							win.focus();
@@ -82,13 +81,13 @@
 
 		    // requestAnimationFrame
 		    
-		    function update() { 
-				wall.render(posters);
+		 //    function update() { 
+			// 	wall.render(posters);
 				
-				startRaf(update);
-			}
+			// 	startRaf(update);
+			// }
 			
-			startRaf(update);
+			// startRaf(update);
 
 	    </script>
 	    
