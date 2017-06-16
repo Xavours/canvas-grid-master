@@ -34,7 +34,14 @@
 			for ( var i=0; i <= 32; i++) {
 				var img = document.createElement("img");
 				img.src = 'images/girlz/' + i + '.jpg';
-				img.setAttribute("class", "library");
+				img.setAttribute("class", "library girlz");
+				document.body.appendChild(img);
+			}
+
+			for ( var i=0; i <= 23; i++) {
+				var img = document.createElement("img");
+				img.src = 'images/lamas/' + i + '.jpg';
+				img.setAttribute("class", "library lamas");
 				document.body.appendChild(img);
 			}
 			
@@ -52,14 +59,13 @@
 	    
 	    <script type="text/javascript">
 	    
-		    // var library = $('.library');
-			var library = document.getElementsByClassName('library');
+			var girlz = document.getElementsByClassName('library girlz');
+			var lamas = document.getElementsByClassName('library lamas');
 		
 		    //  Init
-		    var posters = [];
 		    var wall = new Wall('canvas',
 		    					'viewport',
-		    					library,
+		    					girlz,
 		    					options = {
 			    					tileWidth: 300,
 			    					tileHeight: 400,
@@ -70,7 +76,7 @@
 			    					scaleOn: true,
 			    					scale: 1,
 			    					minScale: 0.15,
-			    					masScale: 1.85,
+			    					maxScale: 1.85,
 			    					spreadMode: 'random',
 									onClickCallback: function(tile) {
 		    							var win = window.open(tile.imgSrc, '_blank');

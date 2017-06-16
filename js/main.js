@@ -21,7 +21,7 @@ var lastTileHovered = {};
 			// Main options
 			tileWidth: 300,
 			tileHeight: 400,
-			content: 'rectangle',
+			content: 'images',
 			grayScaleOn: false,
 			fadeAnimation: 'easeOutCubic',
 			
@@ -204,18 +204,19 @@ var lastTileHovered = {};
 
 		//  Initialization
 		this.init = function () {
-			self.generateLibrary();
+			self.generateLibrary(self.source);
 			self.create();
 			self.play();
 		}
 
 		//  Generate array of array of Posters
-		this.generateLibrary = function () {
-			shuffle(self.source);
+		this.generateLibrary = function (array) {
+			self.library = [];
+			shuffle(array);
 			for (var i = 0; i < self.settings.numberTile; i++) {
 				var col = [];
 				for (var j = 0; j < self.settings.numberTile; j++) {
-					var poster = new Poster;
+					var poster = new Poster(array);
 					col.push(poster);
 				}
 				self.library.push(col);
@@ -536,9 +537,10 @@ var lastTileHovered = {};
 //  Class Poster
 var shuffleCounter = 0;
 
-function Poster() {
+function Poster(array) {
 	var self = this;
 	
+	this.source = array
 	this.color = {
 		red: randomPick(1, 255),
 		green: randomPick(1, 255),
@@ -564,16 +566,16 @@ function Poster() {
 
 	//  Apply Spread Mode
 	if (wall.settings.spreadMode == 'random') {
-		this.imgSrc = wall.source[randomPick(0, wall.source.length)].src;
+		this.imgSrc = this.source[randomPick(0, this.source.length)].src;
 
 	} else if (wall.settings.spreadMode == 'shuffle') {
-		if (shuffleCounter == wall.source.length) {
-			shuffle(wall.source);
+		if (shuffleCounter == this.source.length) {
+			shuffle(this.source);
 			shuffleCounter = 0;
 		}
 		
 		if( Object.toType(this.addKeys) === 'function') this.addKeys();
-		this.imgSrc = wall.source[shuffleCounter].src;
+		this.imgSrc = this.source[shuffleCounter].src;
 
 		shuffleCounter++;
 		//console.log(shuffleCounter);
