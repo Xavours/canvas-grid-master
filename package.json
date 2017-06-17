@@ -1,6 +1,6 @@
 {
   "name": "canvas-grid-master",
-  "version": "1.0.0",
+  "version": "0.6.0",
   "description": "Canvas-grid-master is an endless grid in canvas to browse/swipe a bunch of images. Work in progress",
   "main": "index.js",
   "scripts": {

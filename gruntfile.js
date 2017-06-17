@@ -28,7 +28,7 @@ module.exports = function(grunt) {
 		cssmin: {
 			target: {
 				files: {
-					'min/app.min.css': 'css/*.css'
+					'dist/app.min.css': 'css/*.css'
 				}
 			}
 		},
@@ -37,7 +37,7 @@ module.exports = function(grunt) {
 		autoprefixer: {
 			styles: {
 				files: {
-					'min/app.min.css': 'min/app.min.css'
+					'dist/app.min.css': 'dist/app.min.css'
 				}
 			}
 		},
@@ -61,7 +61,7 @@ module.exports = function(grunt) {
 			},
 		my_target: {
 			files: {
-				'min/canvas-grid-master.min.js': [
+				'dist/canvas-grid-master.min.js': [
 					'js/main.js',
 					'js/functions.js',
 					'js/options.js',
@@ -72,7 +72,7 @@ module.exports = function(grunt) {
 		},
 		
 		//  Clean .css and .css.map from sass files
-		clean: ["css/*.css.map"]
+		clean: ['css/*.css.map','css/*.css']
 	});
 
 

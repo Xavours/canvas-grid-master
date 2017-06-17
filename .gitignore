@@ -67,9 +67,3 @@ node_modules
 .Trashes
 ehthumbs.db
 Thumbs.db
-
-##
-## Ignoring it's own compiled stuff
-##
-min/*.*
-min/canvas-grid-master.min.js
