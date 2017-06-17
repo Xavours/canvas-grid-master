@@ -1,7 +1,7 @@
 {
   "name": "canvas-grid-master",
   "version": "1.0.0",
-  "description": "Canvas-grid-master is an endless grid in canvas to browse a bunch of images stored in a folder. Work in progress. Will be probably released in November 2015.",
+  "description": "Canvas-grid-master is an endless grid in canvas to browse/swipe a bunch of images. Work in progress",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

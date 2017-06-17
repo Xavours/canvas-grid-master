@@ -1,3 +1,11 @@
+/*
+ * CANVAS GRID MASTER
+ * https://github.com/Xavours/canvas-grid-master
+ *
+ * Copyright (c) 2015 - 17 xavours
+ * Licensed under the MIT license.
+ */
+
 //  Class Wall
 var canvas, ctx;
 var lastTileHovered = {};
@@ -21,7 +29,7 @@ var lastTileHovered = {};
 			// Main options
 			tileWidth: 300,
 			tileHeight: 400,
-			content: 'images',
+			content: 'image',
 			grayScaleOn: false,
 			fadeAnimation: 'easeOutCubic',
 			

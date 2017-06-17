@@ -3,6 +3,15 @@ module.exports = function(grunt) {
 	// Project configuration.
 	grunt.initConfig({
 
+		pkg: grunt.file.readJSON('package.json'),
+		meta: {
+			banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
+				'<%= grunt.template.today("yyyy-mm-dd") %>\n' +
+				'<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
+				'* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
+				' Licensed <%= pkg.license %> */\n'
+		},
+
 		//  Convert SASS files into CSS  
 		sass: {
 			options: {
@@ -47,13 +56,14 @@ module.exports = function(grunt) {
 		//  Minify JS
 		uglify: {
 			options: {
-				mangle: false
+				banner: '<%= meta.banner %>',
+				report: 'gzip'
 			},
 		my_target: {
 			files: {
 				'min/canvas-grid-master.min.js': [
-					'js/functions.js',
 					'js/main.js',
+					'js/functions.js',
 					'js/options.js',
 					'js/trigger.js',
 					'js/easing.js'],
